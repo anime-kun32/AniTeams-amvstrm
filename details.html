@@ -13,6 +13,23 @@
         font-family: Arial, sans-serif;
         overflow-y: scroll;
     }
+        
+    body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    body::-webkit-scrollbar-track {
+        background: #333;
+    }
+
+    body::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 5px;
+    }
+
+    body::-webkit-scrollbar-thumb:hover {
+        background: #666;
+    }
         .banner {
             position: relative;
             background-size: cover;
