@@ -82,19 +82,67 @@
     });
 </script>
     <style>
-        .movie-card:hover .movie-image {
-            filter: blur(4px);
-        }
-        .movie-card:hover .movie-info {
-            opacity: 1;
-        }
-        .movie-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .movie-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-        }
+        ./* Container for movie cards */
+.movie-card-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping of cards to next row if necessary */
+    gap: 16px; /* Space between cards */
+    overflow-x: auto; /* Horizontal scrolling on smaller screens */
+    padding: 10px; /* Padding around the container */
+}
+
+/* Movie card styling */
+.movie-card {
+    flex: 1 1 calc(33.333% - 16px); /* Three cards per row, accounting for gaps */
+    box-sizing: border-box;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.movie-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Styling for movie image and info */
+.movie-image {
+    transition: filter 0.2s;
+}
+
+.movie-info {
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.2s;
+}
+
+.movie-card:hover .movie-image {
+    filter: blur(4px);
+}
+
+.movie-card:hover .movie-info {
+    opacity: 1;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .movie-card {
+        flex: 1 1 200px; /* Adjust card size on smaller screens */
+    }
+}
+
+/* Custom scrollbar styling for mobile devices */
+.movie-card-container::-webkit-scrollbar {
+    height: 8px; /* Height of the scrollbar */
+}
+
+.movie-card-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* Color of the scrollbar */
+    border-radius: 10px; /* Rounded corners for the scrollbar */
+}
+
+.movie-card-container::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background color of the track */
+    border-radius: 10px; /* Rounded corners for the track */
+}
+
     </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
