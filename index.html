@@ -41,18 +41,18 @@
         <!-- Add more slides as needed -->
     </div>
 </div>
-<!-- Demarcating line and heading -->
+
 <!-- Demarcating line and heading -->
 <hr class="border-gray-700 my-4">
 <h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
 
-<!-- Horizontal scroll container -->
-<!-- Demarcating line and heading -->
-<hr class="border-gray-700 my-4">
-<h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
-
-<!-- Horizontal scroll container with custom scrollbar -->
-<div class="relative overflow-x-auto whitespace-nowrap py-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+<!-- Container for loading spinner, messages, and movie cards -->
+<div class="relative overflow-x-auto whitespace-nowrap py-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" id="scroll-container">
+    <div id="loading-spinner" class="absolute inset-0 flex justify-center items-center bg-gray-900 bg-opacity-70 z-10">
+        <div class="loader"></div>
+    </div>
+    <div id="error-message" class="hidden text-red-500 text-center py-4">Error fetching data. Please try again later.</div>
+    <div id="no-data-message" class="hidden text-yellow-500 text-center py-4">No data found.</div>
     <div id="movie-container" class="flex space-x-2">
         <!-- Movie cards will be appended here -->
     </div>
@@ -93,15 +93,47 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    /* Loading spinner styling */
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const errorMessage = document.getElementById('error-message');
+        const noDataMessage = document.getElementById('no-data-message');
+        const movieContainer = document.getElementById('movie-container');
+        const scrollContainer = document.getElementById('scroll-container');
+
+        // Show loading spinner
+        loadingSpinner.classList.remove('hidden');
+
         fetch('https://api-p1xr.vercel.app/api/v2/trending') // Replace with your actual API endpoint
             .then(response => response.json())
             .then(data => {
-                const movieContainer = document.getElementById('movie-container');
-                
+                // Hide loading spinner
+                loadingSpinner.classList.add('hidden');
+
+                if (data.results.length === 0) {
+                    noDataMessage.classList.remove('hidden');
+                    return;
+                }
+
+                noDataMessage.classList.add('hidden');
+
                 data.results.forEach(movie => {
                     const card = document.createElement('div');
                     card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-36 h-56";
@@ -122,8 +154,32 @@
                 });
             })
             .catch(error => {
+                // Hide loading spinner
+                loadingSpinner.classList.add('hidden');
+
+                // Show error message
+                errorMessage.classList.remove('hidden');
                 console.error('Error fetching data:', error);
             });
+
+        // Function to handle horizontal scroll with arrow keys
+        function handleArrowKeyScroll(event) {
+            const scrollAmount = 100; // Amount to scroll with each key press
+
+            switch (event.key) {
+                case 'ArrowRight':
+                    scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    break;
+                case 'ArrowLeft':
+                    scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                    break;
+                default:
+                    return; // Exit the function if the key is not ArrowRight or ArrowLeft
+            }
+        }
+
+        // Add event listener for keydown events
+        document.addEventListener('keydown', handleArrowKeyScroll);
     });
 </script>
 
