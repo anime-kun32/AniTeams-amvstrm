@@ -53,7 +53,7 @@
     </div>
     <div id="error-message" class="hidden text-red-500 text-center py-4">Error fetching data. Please try again later.</div>
     <div id="no-data-message" class="hidden text-yellow-500 text-center py-4">No data found.</div>
-    <div id="movie-container" class="flex space-x-2">
+    <div id="movie-container" class="flex space-x-4"> <!-- Increased spacing here -->
         <!-- Movie cards will be appended here -->
     </div>
 </div>
@@ -101,6 +101,7 @@
         border-radius: 50%;
         width: 40px;
         height: 40px;
+        background-color: #333; /* Updated background color */
         animation: spin 1s linear infinite;
     }
 
@@ -121,7 +122,7 @@
         // Show loading spinner
         loadingSpinner.classList.remove('hidden');
 
-        fetch('https://api-p1xr.vercel.app/api/v2/trending?limit=9') // Replace with your actual API endpoint
+        fetch('https://api-p1xr.vercel.app/api/v2/trending') // Replace with your actual API endpoint
             .then(response => response.json())
             .then(data => {
                 // Hide loading spinner
@@ -136,7 +137,7 @@
 
                 data.results.forEach(movie => {
                     const card = document.createElement('div');
-                    card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-36 h-56";
+                    card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-40 h-60"; // Adjusted card size
 
                     card.innerHTML = `
                         <a href="https://google.com/${movie.id}" target="_blank">
@@ -184,6 +185,32 @@
 </script>
 
 
+<style>/* Apply scrollbar styling globally */
+* {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #888 #f0f0f0; /* Firefox */
+}
+
+/* Webkit browsers */
+::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+    background-color: #f0f0f0; /* Background color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar handle */
+    border-radius: 6px; /* Rounded corners for the scrollbar handle */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Color of the scrollbar handle on hover */
+}
+
+/* For Internet Explorer and Edge Legacy */
+body {
+    -ms-overflow-style: scrollbar; /* Basic scrollbar styling */
+}
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <script>
