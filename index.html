@@ -148,7 +148,8 @@
     }
 
     .suggestion-item {
-        display: inline-flex; /* Horizontally align items */
+        display: flex; /* Flex container for horizontal layout */
+        align-items: flex-start; /* Align items at the start of the flex container */
         padding: 10px;
         border-right: 1px solid #555;
         cursor: pointer;
@@ -187,6 +188,12 @@
         color: #aaa;
     }
 
+    .suggestion-genre {
+        font-size: 12px;
+        color: #aaa;
+        margin-top: 5px;
+    }
+
     .suggestion-info {
         font-size: 12px;
         color: #888;
@@ -196,19 +203,14 @@
     .suggestion-info span {
         margin-right: 10px; /* Spacing between items */
     }
+
     .suggestion-info span::before {
         content: '|'; /* Separator */
         margin-right: 10px;
     }
+
     .suggestion-info span:first-child::before {
         content: ''; /* Remove separator before the first item */
-    }
-
-    /* Remove default list style */
-    .suggestions {
-        list-style: none;
-        padding: 0;
-        margin: 0;
     }
 </style>
 
@@ -242,6 +244,7 @@
                                 <div class="suggestion-details">
                                     <p class="suggestion-title">${result.title.english}</p>
                                     <p class="suggestion-jname">${result.title.native}</p>
+                                    <p class="suggestion-genre">${result.genres.join(', ')}</p>
                                     <p class="suggestion-info">
                                         <span>${result.format}</span>
                                         <span>${result.type}</span>
@@ -282,7 +285,6 @@
         });
     });
 </script>
-
 
 
 
