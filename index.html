@@ -41,7 +41,6 @@
         <!-- Add more slides as needed -->
     </div>
 </div>
-<!-- Search Bar Section -->
 <!-- HTML for Search Bar with Suggestions -->
 <div class="search-container">
     <input
@@ -99,7 +98,6 @@
         outline: none;
         background-color: #444; /* Background color for the search bar */
         color: #fff; /* Text color for the search bar */
-        placeholder-color: #bbb; /* Placeholder text color */
         transition: all 0.3s ease;
     }
 
@@ -123,13 +121,17 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         z-index: 10;
         max-height: 400px;
-        overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: auto; /* Horizontal scroll */
+        overflow-y: hidden; /* Hide vertical scroll */
         display: none; /* Hidden by default */
+        white-space: nowrap; /* Ensure items stay on one line */
+        padding: 0;
+        margin: 0;
+        list-style: none; /* Remove default list style */
     }
 
     .suggestions::-webkit-scrollbar {
-        width: 8px;
+        height: 8px; /* Horizontal scrollbar height */
     }
 
     .suggestions::-webkit-scrollbar-track {
@@ -146,11 +148,14 @@
     }
 
     .suggestion-item {
-        display: flex;
+        display: inline-flex; /* Horizontally align items */
         padding: 10px;
-        border-bottom: 1px solid #555;
+        border-right: 1px solid #555;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        min-width: 300px; /* Minimum width for each item */
+        box-sizing: border-box;
+        vertical-align: top; /* Align vertically */
     }
 
     .suggestion-item:hover {
@@ -277,6 +282,7 @@
         });
     });
 </script>
+
 
 
 
