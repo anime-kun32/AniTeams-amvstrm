@@ -265,7 +265,223 @@
 
 <div class="relative overflow-x-auto whitespace-nowrap py-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" id="scroll-container" tabindex="0">
     <div id="loading-spinner" class="absolute inset-0 flex justify-center items-center bg-gray-900 bg-opacity-70 z-10">
-        <div class="loader"></div>
+        <div class="loader"></div><!-- Search Bar Section -->
+<hr class="border-gray-700 my-4" id="search-line">
+<h5 class="text-xl font-bold text-white mb-4" id="search-heading">Search for Anime</h5>
+
+<div class="relative">
+    <input
+        type="text"
+        id="search-input"
+        placeholder="Search..."
+        class="search-input px-4 py-3 rounded-lg text-white bg-gray-800 placeholder-gray-400 shadow-lg"
+    />
+    <ul id="suggestions-list" class="suggestions-list absolute left-0 w-full bg-gray-900 text-white rounded-lg mt-1 max-h-60 overflow-y-auto z-20">
+        <!-- Suggestions will be appended here -->
+    </ul>
+</div>
+
+<style>
+    /* Page Background Color */
+    body {
+        background-color: #333;
+        color: #fff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Search Input Styling */
+    .search-input {
+        width: 400px; /* Increased width for better usability */
+        height: 50px; /* Increased height for a more prominent look */
+        border: 1px solid #555; /* Subtle border color */
+        background-color: #444; /* Slightly lighter background */
+        color: #fff; /* White text color for contrast */
+        border-radius: 12px; /* More rounded corners */
+        outline: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        font-size: 16px; /* Larger font size for readability */
+        transition: all 0.3s ease-in-out;
+    }
+    .search-input::placeholder {
+        color: #bbb; /* Placeholder text color */
+    }
+    .search-input:focus {
+        border-color: #777; /* Focus border color */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.8); /* Enhanced shadow on focus */
+    }
+
+    /* Suggestions List Styling */
+    .suggestions-list {
+        display: none; /* Hidden by default */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #666; /* Border color matching the theme */
+        border-radius: 12px; /* Rounded corners for suggestions */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        max-height: 300px; /* Adjust maximum height */
+        overflow-y: auto; /* Vertical scrollbar */
+        scrollbar-width: thin; /* Firefox scrollbar width */
+    }
+
+    .suggestions-list::-webkit-scrollbar {
+        width: 8px; /* Width of the scrollbar */
+    }
+
+    .suggestions-list::-webkit-scrollbar-thumb {
+        background-color: #555; /* Color of the scrollbar */
+        border-radius: 12px; /* Rounded corners for the scrollbar */
+    }
+
+    .suggestions-list::-webkit-scrollbar-track {
+        background: #333; /* Background color of the scrollbar track */
+    }
+
+    .suggestions-list li {
+        padding: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: flex;
+        align-items: flex-start;
+        border-bottom: 1px solid #444; /* Separator line */
+    }
+    .suggestions-list li:hover {
+        background-color: #555; /* Background color on hover */
+        transform: scale(1.02); /* Slight scaling on hover */
+    }
+    .suggestions-list li:last-child {
+        border-bottom: none; /* Remove bottom border for the last item */
+    }
+
+    /* Styling for suggestion items */
+    .suggestion-item {
+        display: flex;
+        align-items: flex-start;
+    }
+    .suggestion-item img {
+        width: 90px; /* Adjust image width */
+        height: 130px; /* Adjust image height */
+        object-fit: cover;
+        border-radius: 8px; /* Rounded corners for images */
+        margin-right: 15px;
+    }
+    .suggestion-item div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+    }
+    .suggestion-item div p {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Styling for suggestions details */
+    .suggestion-details {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+    .suggestion-details span {
+        margin-right: 12px; /* Increased spacing between items */
+        font-size: 13px;
+    }
+    .suggestion-details span::before {
+        content: '\25C6'; /* Diamond bullet point */
+        margin-right: 5px;
+    }
+
+    /* Spinner Styling */
+    .spinner {
+        border: 4px solid #333; /* Base color */
+        border-top: 4px solid #fff; /* Spinner color */
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const suggestionsList = document.getElementById('suggestions-list');
+
+        function fetchSuggestions(query) {
+            if (query.length < 2) {
+                suggestionsList.style.display = 'none'; // Hide list if query is too short
+                return;
+            }
+
+            // Show loading spinner
+            suggestionsList.innerHTML = '<li><div class="spinner"></div></li>';
+            suggestionsList.style.display = 'block';
+
+            fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`) // Replace with your actual API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results.length === 0) {
+                        suggestionsList.innerHTML = '<li>No results found</li>';
+                        return;
+                    }
+
+                    suggestionsList.innerHTML = data.results.map(result => `
+                        <li class="suggestion-item">
+                            <a href="https://google.com/${result.id}" class="suggestion-link">
+                                <img src="${result.coverImage.extraLarge}" alt="${result.title.english}">
+                                <div>
+                                    <p><strong>${result.title.english}</strong></p>
+                                    <p>${result.title.native}</p>
+                                    <p>${result.genres.join(', ')}</p>
+                                    <div class="suggestion-details">
+                                        <span>${result.season}</span>
+                                        <span>${result.seasonYear}</span>
+                                        <span>${result.format}</span>
+                                        <span>${result.type}</span>
+                                        <span>${result.averageScore}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                    suggestionsList.innerHTML = '<li>Error fetching data</li>';
+                });
+        }
+
+        searchInput.addEventListener('input', function() {
+            fetchSuggestions(searchInput.value);
+        });
+
+        // Close suggestions list if clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#search-input') && !event.target.closest('#suggestions-list')) {
+                suggestionsList.style.display = 'none';
+            }
+        });
+
+        // Handle click on suggestion
+        suggestionsList.addEventListener('click', function(event) {
+            const item = event.target.closest('li');
+            if (item) {
+                const link = item.querySelector('.suggestion-link');
+                if (link) {
+                    window.location.href = link.href; // Redirect to the link
+                }
+            }
+        });
+    });
+</script>
+
     </div>
     <div id="error-message" class="hidden text-red-500 text-center py-4">Error fetching data. Please try again later.</div>
     <div id="no-data-message" class="hidden text-yellow-500 text-center py-4">No data found.</div>
