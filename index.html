@@ -42,7 +42,6 @@
     </div>
 </div>
 <!-- Search Bar Section -->
-<!-- Search Bar Section -->
 <hr class="border-gray-700 my-4" id="search-line">
 <h5 class="text-xl font-bold text-white mb-4" id="search-heading">Search for Anime</h5>
 
@@ -157,18 +156,19 @@
 
     /* Styling for suggestions details */
     .suggestion-details {
-        display: flex;
-        flex-wrap: wrap;
         margin-top: 5px;
         font-size: 14px;
+        color: #ddd;
     }
     .suggestion-details span {
-        margin-right: 12px; /* Increased spacing between items */
-        font-size: 13px;
+        margin-right: 10px; /* Spacing between items */
     }
     .suggestion-details span::before {
-        content: '\25C6'; /* Diamond bullet point */
-        margin-right: 5px;
+        content: '|'; /* Separator */
+        margin-right: 10px;
+    }
+    .suggestion-details span:first-child::before {
+        content: ''; /* Remove separator before the first item */
     }
 
     /* Spinner Styling */
@@ -201,7 +201,7 @@
             suggestionsList.innerHTML = '<li><div class="spinner"></div></li>';
             suggestionsList.style.display = 'block';
 
-            fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`) // Replace with your actual API endpoint
+            fetch(`https://api.example.com/search?q=${query}`) // Replace with your actual API endpoint
                 .then(response => response.json())
                 .then(data => {
                     if (data.results.length === 0) {
@@ -218,10 +218,9 @@
                                     <p>${result.title.native}</p>
                                     <p>${result.genres.join(', ')}</p>
                                     <div class="suggestion-details">
-                                        <span>${result.season}</span>
-                                        <span>${result.seasonYear}</span>
                                         <span>${result.format}</span>
                                         <span>${result.type}</span>
+                                        <span>${result.seasonYear}</span>
                                         <span>${result.averageScore}</span>
                                     </div>
                                 </div>
