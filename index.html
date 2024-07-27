@@ -178,7 +178,7 @@
         const response = await fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`);
         const data = await response.json();
         const suggestions = data.results.map(item => `
-            <a href="https://google.com/${item.id}" class="suggestion-item">
+            <a href="./details.html?id=${item.id}" class="suggestion-item">
                 <img src="${item.coverImage.extraLarge}" alt="${item.title.userPreferred}">
                 <div class="suggestion-details">
                     <div class="suggestion-title">${item.title.userPreferred}</div>
@@ -381,7 +381,7 @@
 
                     suggestionsList.innerHTML = data.results.map(result => `
                         <li class="suggestion-item">
-                            <a href="https://google.com/${result.id}" class="suggestion-link">
+                            <a href="./details.html?id=${result.id}" class="suggestion-link">
                                 <img src="${result.coverImage.extraLarge}" alt="${result.title.english}">
                                 <div>
                                     <p><strong>${result.title.english}</strong></p>
@@ -547,7 +547,7 @@
                         card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-32 h-48"; // Adjusted card size
 
                         card.innerHTML = `
-                            <a href="https://google.com/${movie.id}" target="_blank">
+                            <a href="./details.html?id=${movie.id}" target="_blank">
                                 <img src="${movie.coverImage.extraLarge}" alt="${movie.title.english}" class="movie-image w-full h-full object-cover">
                                 <div class="movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-2 transition-opacity duration-300">
                                     <h2 class="text-xs font-bold mb-1">${movie.title.english}</h2>
@@ -603,7 +603,7 @@
                         card.className = "new-movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-32 h-48"; // Adjusted card size
 
                         card.innerHTML = `
-                            <a href="https://google.com/${movie.id}" target="_blank">
+                            <a href="./details.html?id=${movie.id}" target="_blank">
                                 <img src="${movie.coverImage.extraLarge}" alt="${movie.title.english}" class="new-movie-image w-full h-full object-cover">
                                 <div class="new-movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-2 transition-opacity duration-300">
                                     <h2 class="text-xs font-bold mb-1">${movie.title.english}</h2>
