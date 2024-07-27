@@ -41,6 +41,176 @@
         <!-- Add more slides as needed -->
     </div>
 </div>
+<!-- Search Bar Section -->
+<hr class="border-gray-700 my-4" id="search-line">
+<h5 class="text-xl font-bold text-white mb-4" id="search-heading">Search for Anime</h5>
+
+<div class="relative">
+    <input
+        type="text"
+        id="search-input"
+        placeholder="Search..."
+        class="search-input px-4 py-3 rounded-lg text-white bg-gray-800 placeholder-gray-400 shadow-lg"
+    />
+    <ul id="suggestions-list" class="suggestions-list absolute left-0 w-full bg-gray-800 text-white rounded-lg mt-1 max-h-60 overflow-y-auto z-20">
+        <!-- Suggestions will be appended here -->
+    </ul>
+</div>
+<!-- serach bar with suggestion -->
+<style>
+    /* Page Background Color */
+    body {
+        background-color: #333;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Search Input Styling */
+    .search-input {
+        width: 400px; /* Increased width */
+        height: 50px; /* Increased height */
+        border: 1px solid #555; /* Border color */
+        background-color: #333; /* Dark background for input */
+        color: #fff; /* White text color */
+        border-radius: 8px; /* Rounded corners */
+        outline: none;
+        transition: all 0.3s ease-in-out;
+    }
+    .search-input::placeholder {
+        color: #ccc; /* Placeholder text color */
+    }
+    .search-input:focus {
+        border-color: #777; /* Focus border color */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Shadow effect on focus */
+    }
+
+    /* Suggestions List Styling */
+    .suggestions-list {
+        display: none; /* Hidden by default */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #444;
+        border-radius: 8px; /* Rounded corners */
+    }
+    .suggestions-list li {
+        padding: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .suggestions-list li:hover {
+        background-color: #555; /* Background color on hover */
+    }
+
+    /* Styling for suggestion items */
+    .suggestion-item {
+        display: flex;
+        align-items: center;
+    }
+    .suggestion-item img {
+        width: 75px; /* Increased image width */
+        height: 100px; /* Increased image height */
+        object-fit: cover;
+        border-radius: 8px; /* Rounded corners for images */
+        margin-right: 15px;
+    }
+    .suggestion-item div {
+        display: flex;
+        flex-direction: column;
+    }
+    .suggestion-item div p {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Styling for suggestions details */
+    .suggestion-details {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 5px;
+    }
+    .suggestion-details span {
+        margin-right: 10px; /* Increased spacing between items */
+        font-size: 14px;
+    }
+    .suggestion-details span::before {
+        content: '\25C6'; /* Diamond bullet point */
+        margin-right: 5px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const suggestionsList = document.getElementById('suggestions-list');
+
+        // Function to fetch suggestions
+        function fetchSuggestions(query) {
+            if (query.length < 2) {
+                suggestionsList.classList.remove('show-suggestions');
+                return;
+            }
+
+            fetch(`https://api.example.com/search?q=${query}`) // Replace with your actual API endpoint
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results.length === 0) {
+                        suggestionsList.innerHTML = '<li>No results found</li>';
+                        suggestionsList.classList.add('show-suggestions');
+                        return;
+                    }
+
+                    suggestionsList.innerHTML = data.results.map(result => `
+                        <li class="suggestion-item" data-id="${result.id}">
+                            <img src="${result.coverImage.extraLarge}" alt="${result.title.english}">
+                            <div>
+                                <p><strong>${result.title.english}</strong></p>
+                                <p>${result.title.native}</p>
+                                <div class="suggestion-details">
+                                    <span>${result.genres.join(', ')}</span>
+                                    <span>${result.season}</span>
+                                    <span>${result.format}</span>
+                                    <span>${result.type}</span>
+                                    <span>${result.seasonYear}</span>
+                                    <span>${result.averageScore}</span>
+                                </div>
+                            </div>
+                        </li>
+                    `).join('');
+                    
+                    suggestionsList.classList.add('show-suggestions');
+                })
+                .catch(error => {
+                    console.error('Error fetching suggestions:', error);
+                });
+        }
+
+        searchInput.addEventListener('input', function() {
+            fetchSuggestions(searchInput.value);
+        });
+
+        // Close suggestions list if clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#search-input') && !event.target.closest('#suggestions-list')) {
+                suggestionsList.classList.remove('show-suggestions');
+            }
+        });
+
+        // Handle click on suggestion
+        suggestionsList.addEventListener('click', function(event) {
+            const item = event.target.closest('li');
+            if (item) {
+                const id = item.getAttribute('data-id');
+                // Handle the selected suggestion (e.g., navigate to a detailed view)
+                console.log('Selected ID:', id);
+                searchInput.value = item.querySelector('p').textContent;
+                suggestionsList.classList.remove('show-suggestions');
+            }
+        });
+    });
+</script>
 
 <!-- Original Section -->
 <hr class="border-gray-700 my-4" id="section-line">
