@@ -153,7 +153,7 @@
                 return;
             }
 
-            fetch(`https://api.example.com/search?q=${query}`) // Replace with your actual API endpoint
+            fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`) // Replace with your actual API endpoint
                 .then(response => response.json())
                 .then(data => {
                     if (data.results.length === 0) {
