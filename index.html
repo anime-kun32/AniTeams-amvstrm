@@ -42,13 +42,32 @@
     </div>
 </div>
 <!-- Demarcating line and heading -->
+<!-- Demarcating line and heading -->
 <hr class="border-gray-700 my-4">
 <h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
 
-<!-- Movie container -->
-<div id="movie-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-    <!-- Movie cards will be appended here -->
+<!-- Horizontal scroll container -->
+<div class="relative overflow-x-auto whitespace-nowrap py-4">
+    <div id="movie-container" class="flex space-x-2">
+        <!-- Movie cards will be appended here -->
+    </div>
 </div>
+
+<style>
+    .movie-card:hover .movie-image {
+        filter: blur(4px);
+    }
+    .movie-card:hover .movie-info {
+        opacity: 1;
+    }
+    .movie-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .movie-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -59,16 +78,16 @@
                 
                 data.results.forEach(movie => {
                     const card = document.createElement('div');
-                    card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden";
+                    card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden flex-shrink-0 w-36 h-56";
 
                     card.innerHTML = `
                         <a href="https://google.com/${movie.id}" target="_blank">
                             <img src="${movie.coverImage.extraLarge}" alt="${movie.title.english}" class="movie-image w-full h-full object-cover">
-                            <div class="movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-4 transition-opacity duration-300">
-                                <h2 class="text-xl font-bold mb-2">${movie.title.english}</h2>
-                                <p class="text-sm mb-2">${movie.genres.join(', ')}</p>
-                                <p class="text-sm">Episodes: ${movie.episodes}</p>
-                                <p class="text-sm">Season Year: ${movie.seasonYear}</p>
+                            <div class="movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-2 transition-opacity duration-300">
+                                <h2 class="text-lg font-bold mb-1">${movie.title.english}</h2>
+                                <p class="text-xs mb-1">${movie.genres.join(', ')}</p>
+                                <p class="text-xs">Episodes: ${movie.episodes}</p>
+                                <p class="text-xs">Season Year: ${movie.seasonYear}</p>
                             </div>
                         </a>
                     `;
@@ -81,73 +100,7 @@
             });
     });
 </script>
-    <style>
-        /* Container for movie cards */
-.movie-card-container {
-    display: flex;
-    flex-direction: row; /* Arrange cards in a row */
-    flex-wrap: nowrap; /* Prevent wrapping to the next line */
-    gap: 16px; /* Space between cards */
-    overflow-x: auto; /* Enable horizontal scrolling */
-    padding: 10px; /* Padding around the container */
-    scroll-behavior: smooth; /* Smooth scrolling effect */
-}
 
-/* Movie card styling */
-.movie-card {
-    flex: 0 0 auto; /* Prevent cards from shrinking or growing */
-    width: 200px; /* Default width of each card */
-    box-sizing: border-box;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.movie-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Styling for movie image and info */
-.movie-image {
-    transition: filter 0.2s;
-}
-
-.movie-info {
-    opacity: 0; /* Hidden by default */
-    transition: opacity 0.2s;
-}
-
-.movie-card:hover .movie-image {
-    filter: blur(4px);
-}
-
-.movie-card:hover .movie-info {
-    opacity: 1;
-}
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .movie-card {
-        width: 150px; /* Adjust card width for smaller screens */
-    }
-}
-
-/* Custom scrollbar styling for mobile devices */
-.movie-card-container::-webkit-scrollbar {
-    height: 8px; /* Height of the scrollbar */
-}
-
-.movie-card-container::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3); /* Color of the scrollbar */
-    border-radius: 10px; /* Rounded corners for the scrollbar */
-}
-
-.movie-card-container::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Background color of the track */
-    border-radius: 10px; /* Rounded corners for the track */
-}
-
-
-    </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
