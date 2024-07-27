@@ -82,18 +82,20 @@
     });
 </script>
     <style>
-        ./* Container for movie cards */
+        /* Container for movie cards */
 .movie-card-container {
     display: flex;
-    flex-wrap: wrap; /* Allows wrapping of cards to next row if necessary */
+    flex-wrap: nowrap; /* Ensure cards are in a single row */
     gap: 16px; /* Space between cards */
-    overflow-x: auto; /* Horizontal scrolling on smaller screens */
+    overflow-x: auto; /* Allow horizontal scrolling */
     padding: 10px; /* Padding around the container */
+    scroll-behavior: smooth; /* Smooth scrolling */
 }
 
 /* Movie card styling */
 .movie-card {
-    flex: 1 1 calc(33.333% - 16px); /* Three cards per row, accounting for gaps */
+    flex: 0 0 auto; /* Prevent cards from shrinking or growing */
+    width: 200px; /* Set a fixed width for each card */
     box-sizing: border-box;
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -124,7 +126,7 @@
 /* Mobile styles */
 @media (max-width: 768px) {
     .movie-card {
-        flex: 1 1 200px; /* Adjust card size on smaller screens */
+        width: 150px; /* Adjust card width for smaller screens */
     }
 }
 
