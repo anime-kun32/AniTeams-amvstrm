@@ -1,0 +1,23 @@
+  body {
+            background-color: #333333;
+            color: white;
+        }
+        .movie-slide {
+            position: relative;
+            height: 80vh;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+        }
+        .movie-details {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        .movie-details p {
+            display: inline-block;
+            margin-right: 10px;
+        }
