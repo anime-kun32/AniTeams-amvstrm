@@ -7,31 +7,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-    <style>
-        body {
-            background-color: #333333;
-            color: white;
-        }
-        .movie-slide {
-            position: relative;
-            height: 80vh;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.8;
-        }
-        .movie-details {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            padding: 20px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        .movie-details p {
-            display: inline-block;
-            margin-right: 10px;
-        }
-    </style>
+     <link rel="stylesheet" href="css/style.css">
+    
 </head>
 <body>
 
@@ -64,6 +41,46 @@
         <!-- Add more slides as needed -->
     </div>
 </div>
+<!-- Demarcating line and heading -->
+<hr class="border-gray-700 my-4">
+<h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
+
+<!-- Movie container -->
+<div id="movie-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <!-- Movie cards will be appended here -->
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('https://api.example.com/anime') // Replace with your actual API endpoint
+            .then(response => response.json())
+            .then(data => {
+                const movieContainer = document.getElementById('movie-container');
+                
+                data.results.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = "movie-card relative bg-gray-800 rounded-lg overflow-hidden";
+
+                    card.innerHTML = `
+                        <a href="https://google.com/${movie.id}" target="_blank">
+                            <img src="${movie.coverImage.extraLarge}" alt="${movie.title.english}" class="movie-image w-full h-full object-cover">
+                            <div class="movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-4 transition-opacity duration-300">
+                                <h2 class="text-xl font-bold mb-2">${movie.title.english}</h2>
+                                <p class="text-sm mb-2">${movie.genres.join(', ')}</p>
+                                <p class="text-sm">Episodes: ${movie.episodes}</p>
+                                <p class="text-sm">Season Year: ${movie.seasonYear}</p>
+                            </div>
+                        </a>
+                    `;
+
+                    movieContainer.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    });
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
