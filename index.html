@@ -85,17 +85,18 @@
         /* Container for movie cards */
 .movie-card-container {
     display: flex;
-    flex-wrap: nowrap; /* Ensure cards are in a single row */
+    flex-direction: row; /* Arrange cards in a row */
+    flex-wrap: nowrap; /* Prevent wrapping to the next line */
     gap: 16px; /* Space between cards */
-    overflow-x: auto; /* Allow horizontal scrolling */
+    overflow-x: auto; /* Enable horizontal scrolling */
     padding: 10px; /* Padding around the container */
-    scroll-behavior: smooth; /* Smooth scrolling */
+    scroll-behavior: smooth; /* Smooth scrolling effect */
 }
 
 /* Movie card styling */
 .movie-card {
     flex: 0 0 auto; /* Prevent cards from shrinking or growing */
-    width: 200px; /* Set a fixed width for each card */
+    width: 200px; /* Default width of each card */
     box-sizing: border-box;
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -144,6 +145,7 @@
     background: #f1f1f1; /* Background color of the track */
     border-radius: 10px; /* Rounded corners for the track */
 }
+
 
     </style>
 
