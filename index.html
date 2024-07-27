@@ -42,7 +42,6 @@
     </div>
 </div>
 <!-- Search Bar Section -->
-<!-- Search Bar Section -->
 <hr class="border-gray-700 my-4" id="search-line">
 <h5 class="text-xl font-bold text-white mb-4" id="search-heading">Search for Anime</h5>
 
@@ -53,7 +52,7 @@
         placeholder="Search..."
         class="search-input px-4 py-3 rounded-lg text-white bg-gray-800 placeholder-gray-400 shadow-lg"
     />
-    <ul id="suggestions-list" class="suggestions-list absolute left-0 w-full bg-gray-800 text-white rounded-lg mt-1 max-h-60 overflow-y-auto z-20">
+    <ul id="suggestions-list" class="suggestions-list absolute left-0 w-full bg-gray-900 text-white rounded-lg mt-1 max-h-60 overflow-y-auto z-20">
         <!-- Suggestions will be appended here -->
     </ul>
 </div>
@@ -63,26 +62,28 @@
     body {
         background-color: #333;
         color: #fff;
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     /* Search Input Styling */
     .search-input {
-        width: 350px; /* Increased width */
-        height: 50px; /* Increased height */
-        border: 1px solid #555; /* Border color */
-        background-color: #333; /* Dark background for input */
-        color: #fff; /* White text color */
-        border-radius: 8px; /* Rounded corners */
+        width: 400px; /* Increased width for better usability */
+        height: 50px; /* Increased height for a more prominent look */
+        border: 1px solid #555; /* Subtle border color */
+        background-color: #444; /* Slightly lighter background */
+        color: #fff; /* White text color for contrast */
+        border-radius: 12px; /* More rounded corners */
         outline: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        font-size: 16px; /* Larger font size for readability */
         transition: all 0.3s ease-in-out;
     }
     .search-input::placeholder {
-        color: #ccc; /* Placeholder text color */
+        color: #bbb; /* Placeholder text color */
     }
     .search-input:focus {
         border-color: #777; /* Focus border color */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Shadow effect on focus */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.8); /* Enhanced shadow on focus */
     }
 
     /* Suggestions List Styling */
@@ -91,24 +92,31 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        border: 1px solid #444;
-        border-radius: 8px; /* Rounded corners */
+        border: 1px solid #666; /* Border color matching the theme */
+        border-radius: 12px; /* Rounded corners for suggestions */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        max-height: 300px; /* Adjust maximum height */
     }
     .suggestions-list li {
-        padding: 10px;
+        padding: 15px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, transform 0.3s ease;
         display: flex;
         align-items: center;
+        border-bottom: 1px solid #555; /* Separator line */
     }
     .suggestions-list li:hover {
         background-color: #555; /* Background color on hover */
+        transform: scale(1.02); /* Slight scaling on hover */
+    }
+    .suggestions-list li:last-child {
+        border-bottom: none; /* Remove bottom border for the last item */
     }
 
     /* Styling for suggestion items */
     .suggestion-item img {
-        width: 75px; /* Adjust image width */
-        height: 100px; /* Adjust image height */
+        width: 90px; /* Adjust image width */
+        height: 130px; /* Adjust image height */
         object-fit: cover;
         border-radius: 8px; /* Rounded corners for images */
         margin-right: 15px;
@@ -116,6 +124,7 @@
     .suggestion-item div {
         display: flex;
         flex-direction: column;
+        justify-content: center;
     }
     .suggestion-item div p {
         margin: 0;
@@ -129,10 +138,11 @@
         display: flex;
         flex-wrap: wrap;
         margin-top: 5px;
+        font-size: 14px;
     }
     .suggestion-details span {
-        margin-right: 10px; /* Increased spacing between items */
-        font-size: 14px;
+        margin-right: 12px; /* Increased spacing between items */
+        font-size: 13px;
     }
     .suggestion-details span::before {
         content: '\25C6'; /* Diamond bullet point */
@@ -178,20 +188,22 @@
                     }
 
                     suggestionsList.innerHTML = data.results.map(result => `
-                        <li class="suggestion-item" data-id="${result.id}">
-                            <img src="${result.coverImage.extraLarge}" alt="${result.title.english}">
-                            <div>
-                                <p><strong>${result.title.english}</strong></p>
-                                <p>${result.title.native}</p>
-                                <div class="suggestion-details">
-                                    <span>${result.genres.join(', ')}</span>
-                                    <span>${result.season}</span>
-                                    <span>${result.format}</span>
-                                    <span>${result.type}</span>
-                                    <span>${result.seasonYear}</span>
-                                    <span>${result.averageScore}</span>
+                        <li class="suggestion-item">
+                            <a href="https://google.com/${result.id}" class="suggestion-link">
+                                <img src="${result.coverImage.extraLarge}" alt="${result.title.english}">
+                                <div>
+                                    <p><strong>${result.title.english}</strong></p>
+                                    <p>${result.title.native}</p>
+                                    <div class="suggestion-details">
+                                        <span>${result.genres.join(', ')}</span>
+                                        <span>${result.season}</span>
+                                        <span>${result.format}</span>
+                                        <span>${result.type}</span>
+                                        <span>${result.seasonYear}</span>
+                                        <span>${result.averageScore}</span>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </li>
                     `).join('');
                 })
@@ -216,15 +228,15 @@
         suggestionsList.addEventListener('click', function(event) {
             const item = event.target.closest('li');
             if (item) {
-                const id = item.getAttribute('data-id');
-                // Handle the selected suggestion (e.g., navigate to a detailed view)
-                console.log('Selected ID:', id);
-                searchInput.value = item.querySelector('p').textContent;
-                suggestionsList.style.display = 'none';
+                const link = item.querySelector('.suggestion-link');
+                if (link) {
+                    window.location.href = link.href; // Redirect to the link
+                }
             }
         });
     });
 </script>
+
 
 <!-- Original Section -->
 <hr class="border-gray-700 my-4" id="section-line">
