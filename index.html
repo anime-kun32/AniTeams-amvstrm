@@ -47,13 +47,31 @@
 <h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
 
 <!-- Horizontal scroll container -->
-<div class="relative overflow-x-auto whitespace-nowrap py-4">
+<!-- Demarcating line and heading -->
+<hr class="border-gray-700 my-4">
+<h5 class="text-xl font-bold text-white mb-4">Trending Now</h5>
+
+<!-- Horizontal scroll container with custom scrollbar -->
+<div class="relative overflow-x-auto whitespace-nowrap py-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
     <div id="movie-container" class="flex space-x-2">
         <!-- Movie cards will be appended here -->
     </div>
 </div>
 
 <style>
+    /* Custom scrollbar styling */
+    .scrollbar-thin::-webkit-scrollbar {
+        height: 8px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: #4a4a4a;
+        border-radius: 10px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: #333;
+    }
+
+    /* Hover effects for movie cards */
     .movie-card:hover .movie-image {
         filter: blur(4px);
     }
@@ -66,6 +84,14 @@
     .movie-card:hover {
         transform: translateY(-8px);
         box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Styling for text overflow handling */
+    .movie-info h2,
+    .movie-info p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>
 
@@ -84,7 +110,7 @@
                         <a href="https://google.com/${movie.id}" target="_blank">
                             <img src="${movie.coverImage.extraLarge}" alt="${movie.title.english}" class="movie-image w-full h-full object-cover">
                             <div class="movie-info absolute inset-0 bg-gray-900 bg-opacity-80 opacity-0 flex flex-col justify-center items-center text-center p-2 transition-opacity duration-300">
-                                <h2 class="text-lg font-bold mb-1">${movie.title.english}</h2>
+                                <h2 class="text-sm font-bold mb-1">${movie.title.english}</h2>
                                 <p class="text-xs mb-1">${movie.genres.join(', ')}</p>
                                 <p class="text-xs">Episodes: ${movie.episodes}</p>
                                 <p class="text-xs">Season Year: ${movie.seasonYear}</p>
