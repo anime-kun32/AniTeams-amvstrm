@@ -105,19 +105,6 @@
         overflow-y: auto;
         overflow-x: hidden;
         display: none;
-        opacity: 0;
-        transition: opacity 0.3s ease, max-height 0.3s ease;
-    }
-
-    .suggestions.visible {
-        display: block;
-        opacity: 1;
-        max-height: 400px;
-    }
-
-    .suggestions.hidden {
-        opacity: 0;
-        max-height: 0;
     }
 
     .suggestions::-webkit-scrollbar {
@@ -213,6 +200,7 @@
         }
     });
 </script>
+
 
 
 
