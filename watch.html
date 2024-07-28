@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episodes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto py-8">
+        <h5 class="text-lg font-bold mb-4">Episodes</h5>
+        <div class="mb-4">
+            <label for="languageSelect" class="block mb-2">Select Language:</label>
+            <select id="languageSelect" class="p-2 rounded bg-gray-800 border border-gray-600">
+                <option value="sub">Sub</option>
+                <option value="dub">Dub</option>
+            </select>
+        </div>
+        <div id="episodes-container" class="space-y-4">
+            <!-- Episodes will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const episodesContainer = document.getElementById('episodes-container');
+            const languageSelect = document.getElementById('languageSelect');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            let dub = languageSelect.value === 'dub';
+
+            function fetchEpisodes() {
+                episodesContainer.innerHTML = ''; // Clear the container before fetching new data
+                const loader = document.createElement('div');
+                loader.classList.add('loader');
+                episodesContainer.appendChild(loader);
+
+                fetch(`https://api-p1xr.vercel.app/api/v2/episode/${id}?dub=${dub}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        loader.remove();
+                        data.episodes.forEach(episode => {
+                            const episodeCard = document.createElement('div');
+                            episodeCard.classList.add('flex', 'bg-gray-800', 'rounded-lg', 'overflow-hidden', 'p-4');
+
+                            episodeCard.innerHTML = `
+                                <a href="watch.html?id=${episode.id}" class="block w-full">
+                                    <img src="${episode.image}" alt="${episode.title}" class="w-24 h-24 object-cover mr-4">
+                                    <div>
+                                        <h2 class="text-lg font-bold">${episode.title}</h2>
+                                        <p class="text-gray-400">Episode ${episode.number}</p>
+                                        <p>${episode.description || 'No description available'}</p>
+                                        <p class="text-gray-500 text-sm">${new Date(episode.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                </a>
+                            `;
+
+                            episodesContainer.appendChild(episodeCard);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        loader.remove();
+                        episodesContainer.innerHTML = '<p class="text-white">Failed to load episodes. Please try again later.</p>';
+                    });
+            }
+
+            languageSelect.addEventListener('change', () => {
+                dub = languageSelect.value === 'dub';
+                fetchEpisodes();
+            });
+
+            fetchEpisodes(); // Initial fetch
+        });
+    </script>
+
+    <style>
+        /* Loading spinner styling */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            background-color: #333; /* Updated background color */
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>
