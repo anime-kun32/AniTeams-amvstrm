@@ -42,7 +42,8 @@
     </div>
 </div>
 <!-- Search Bar section -->
-    <div class="search-container">
+    
+                  <div class="search-container">
     <div class="search-bar-container">
         <input type="text" id="searchBar" class="search-bar" placeholder="Search...">
         <button id="micButton" class="mic-button">
@@ -96,32 +97,36 @@
     }
 
     .search-bar-container {
+        position: relative;
         display: flex;
-        align-items: center;
         width: 100%;
     }
 
     .search-bar {
-        width: calc(100% - 50px);
+        width: 100%;
         padding: 15px;
         box-sizing: border-box;
         font-size: 18px;
         border: none;
-        border-radius: 5px 0 0 5px;
+        border-radius: 5px;
         background-color: #555;
         color: #fff;
+        padding-right: 50px; /* Make space for the mic button */
     }
 
     .mic-button {
-        width: 50px;
-        height: 50px;
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #555;
-        border: none;
-        border-radius: 0 5px 5px 0;
-        cursor: pointer;
     }
 
     .mic-button img {
@@ -350,7 +355,8 @@
             micPopup.style.display = 'none';
         }, 5000);
     }
-    </script>
+</script>
+    
     
 
 
