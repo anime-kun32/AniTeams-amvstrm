@@ -1,0 +1,125 @@
+   /* Page Background Color */
+    body {
+        background-color: #333;
+        color: #fff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Search Input Styling */
+    .search-input {
+        width: 400px; /* Increased width for better usability */
+        height: 50px; /* Increased height for a more prominent look */
+        border: 1px solid #555; /* Subtle border color */
+        background-color: #444; /* Slightly lighter background */
+        color: #fff; /* White text color for contrast */
+        border-radius: 12px; /* More rounded corners */
+        outline: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        font-size: 16px; /* Larger font size for readability */
+        transition: all 0.3s ease-in-out;
+    }
+    .search-input::placeholder {
+        color: #bbb; /* Placeholder text color */
+    }
+    .search-input:focus {
+        border-color: #777; /* Focus border color */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.8); /* Enhanced shadow on focus */
+    }
+
+    /* Suggestions List Styling */
+    .suggestions-list {
+        display: none; /* Hidden by default */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #666; /* Border color matching the theme */
+        border-radius: 12px; /* Rounded corners for suggestions */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6); /* Shadow effect */
+        max-height: 300px; /* Adjust maximum height */
+        overflow-y: auto; /* Vertical scrollbar */
+        scrollbar-width: thin; /* Firefox scrollbar width */
+    }
+
+    .suggestions-list::-webkit-scrollbar {
+        width: 8px; /* Width of the scrollbar */
+    }
+
+    .suggestions-list::-webkit-scrollbar-thumb {
+        background-color: #555; /* Color of the scrollbar */
+        border-radius: 12px; /* Rounded corners for the scrollbar */
+    }
+
+    .suggestions-list::-webkit-scrollbar-track {
+        background: #333; /* Background color of the scrollbar track */
+    }
+
+    .suggestions-list li {
+        padding: 15px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        display: flex;
+        align-items: flex-start;
+        border-bottom: 1px solid #444; /* Separator line */
+    }
+    .suggestions-list li:hover {
+        background-color: #555; /* Background color on hover */
+        transform: scale(1.02); /* Slight scaling on hover */
+    }
+    .suggestions-list li:last-child {
+        border-bottom: none; /* Remove bottom border for the last item */
+    }
+
+    /* Styling for suggestion items */
+    .suggestion-item {
+        display: flex;
+        align-items: flex-start;
+    }
+    .suggestion-item img {
+        width: 90px; /* Adjust image width */
+        height: 130px; /* Adjust image height */
+        object-fit: cover;
+        border-radius: 8px; /* Rounded corners for images */
+        margin-right: 15px;
+    }
+    .suggestion-item div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+    }
+    .suggestion-item div p {
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Styling for suggestions details */
+    .suggestion-details {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+    .suggestion-details span {
+        margin-right: 12px; /* Increased spacing between items */
+        font-size: 13px;
+    }
+    .suggestion-details span::before {
+        content: '\25C6'; /* Diamond bullet point */
+        margin-right: 5px;
+    }
+
+    /* Spinner Styling */
+    .spinner {
+        border: 4px solid #333; /* Base color */
+        border-top: 4px solid #fff; /* Spinner color */
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
