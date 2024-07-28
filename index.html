@@ -42,9 +42,24 @@
     </div>
 </div>
 <!-- Search Bar section -->
-<div class="search-container">
-    <input type="text" id="searchBar" class="search-bar" placeholder="Search...">
+    <div class="search-container">
+    <div class="search-bar-container">
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search...">
+        <button id="micButton" class="mic-button">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" alt="Mic">
+        </button>
+    </div>
     <div id="suggestions" class="suggestions"></div>
+</div>
+
+<div id="micPopup" class="mic-popup">
+    <div class="mic-popup-content">
+        <div class="sound-wave"></div>
+        <div class="sound-wave"></div>
+        <div class="sound-wave"></div>
+        <div class="sound-wave"></div>
+        <div class="sound-wave"></div>
+    </div>
 </div>
 
 <style>
@@ -80,15 +95,38 @@
         margin: 20px auto;
     }
 
-    .search-bar {
+    .search-bar-container {
+        display: flex;
+        align-items: center;
         width: 100%;
+    }
+
+    .search-bar {
+        width: calc(100% - 50px);
         padding: 15px;
         box-sizing: border-box;
         font-size: 18px;
         border: none;
-        border-radius: 5px;
+        border-radius: 5px 0 0 5px;
         background-color: #555;
         color: #fff;
+    }
+
+    .mic-button {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #555;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+    }
+
+    .mic-button img {
+        width: 24px;
+        height: 24px;
     }
 
     .suggestions {
@@ -166,6 +204,57 @@
         color: #888;
         margin-top: 5px;
     }
+
+    .mic-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+        z-index: 1000;
+    }
+
+    .mic-popup-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sound-wave {
+        width: 5px;
+        height: 30px;
+        background-color: #fff;
+        margin: 0 2px;
+        animation: sound 1s infinite;
+    }
+
+    .sound-wave:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .sound-wave:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    .sound-wave:nth-child(4) {
+        animation-delay: 0.6s;
+    }
+
+    .sound-wave:nth-child(5) {
+        animation-delay: 0.8s;
+    }
+
+    @keyframes sound {
+        0%, 100% {
+            transform: scaleY(1);
+        }
+        50% {
+            transform: scaleY(2);
+        }
+    }
 </style>
 
 <script>
@@ -199,7 +288,70 @@
             suggestions.style.display = 'none';
         }
     });
-</script>
+
+    const micButton = document.getElementById('micButton');
+    const searchBar = document.getElementById('searchBar');
+    const micPopup = document.getElementById('micPopup');
+    let recognition;
+    let noSoundTimeout;
+
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+    } else if ('SpeechRecognition' in window) {
+        recognition = new SpeechRecognition();
+    }
+
+    if (recognition) {
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        micButton.addEventListener('click', () => {
+            recognition.start();
+            micPopup.style.display = 'block';
+            resetNoSoundTimeout();
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            searchBar.value = transcript;
+            searchBar.dispatchEvent(new Event('input'));
+            micPopup.style.display = 'none';
+        };
+
+        recognition.onsoundstart = () => {
+            resetNoSoundTimeout();
+        };
+
+        recognition.onsoundend = () => {
+            startNoSoundTimeout();
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error', event.error);
+            micPopup.style.display = 'none';
+        };
+    } else {
+        micButton.style.display = 'none';
+        console.warn('Speech Recognition API not supported in this browser.');
+    }
+
+    function resetNoSoundTimeout() {
+        clearTimeout(noSoundTimeout);
+        noSoundTimeout = setTimeout(() => {
+            recognition.stop();
+            micPopup.style.display = 'none';
+        }, 5000);
+    }
+
+    function startNoSoundTimeout() {
+        noSoundTimeout = setTimeout(() => {
+            recognition.stop();
+            micPopup.style.display = 'none';
+        }, 5000);
+    }
+    </script>
+    
 
 
 
