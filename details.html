@@ -12,9 +12,12 @@
 
     <div id="anime-details"></div>
 
-    <script src="js/details.js"></script>
+    <div class="py-4">
+    <h5 class="text-lg font-bold text-white mb-2">Recommendations</h5>
+    <hr class="border-gray-600 mb-4">
     <div id="recommendation-section" class="flex overflow-x-auto space-x-4 py-4" style="height: 300px;">
-    <!-- Cards will be dynamically inserted here -->
+        <!-- Cards will be dynamically inserted here -->
+    </div>
 </div>
 
 <style>
@@ -86,17 +89,19 @@
                 loader.remove();
                 data.results.forEach(anime => {
                     const card = document.createElement('div');
-                    card.classList.add('recommendation-card', 'relative', 'w-72', 'flex-shrink-0', 'bg-gray-800', 'rounded-lg', 'overflow-hidden');
+                    card.classList.add('recommendation-card', 'relative', 'w-60', 'flex-shrink-0', 'bg-gray-800', 'rounded-lg', 'overflow-hidden');
 
                     card.innerHTML = `
-                        <img src="${anime.coverImage.large}" alt="${anime.title.english}" class="movie-image w-full h-full object-cover">
-                        <div class="movie-info absolute inset-0 bg-black bg-opacity-75 text-white p-4 opacity-0 transition-opacity duration-200">
-                            <h2 class="text-lg font-bold">${anime.title.english}</h2>
-                            <p>Season: ${anime.season}</p>
-                            <p>Format: ${anime.format}</p>
-                            <p>Type: ${anime.type}</p>
-                            <p>Genres: ${anime.genres.join(', ')}</p>
-                        </div>
+                        <a href="details.html?id=${anime.id}" class="block w-full h-full">
+                            <img src="${anime.coverImage.large}" alt="${anime.title.english}" class="movie-image w-full h-full object-cover">
+                            <div class="movie-info absolute inset-0 bg-black bg-opacity-75 text-white p-4 opacity-0 transition-opacity duration-200">
+                                <h2 class="text-lg font-bold">${anime.title.english}</h2>
+                                <p>Season: ${anime.season}</p>
+                                <p>Format: ${anime.format}</p>
+                                <p>Type: ${anime.type}</p>
+                                <p>Genres: ${anime.genres.join(', ')}</p>
+                            </div>
+                        </a>
                     `;
 
                     recommendationSection.appendChild(card);
@@ -110,5 +115,6 @@
     });
 </script>
 
+   <script src="js/details.js"></script>
 </body>
 </html>
