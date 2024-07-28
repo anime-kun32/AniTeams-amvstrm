@@ -9,13 +9,6 @@
 <body class="bg-gray-900 text-white">
     <div class="container mx-auto py-8">
         <h5 class="text-lg font-bold mb-4">Episodes</h5>
-        <div class="mb-4">
-            <label for="languageSelect" class="block mb-2">Select Language:</label>
-            <select id="languageSelect" class="p-2 rounded bg-gray-800 border border-gray-600">
-                <option value="sub">Sub</option>
-                <option value="dub">Dub</option>
-            </select>
-        </div>
         <div id="episodes-container" class="space-y-4">
             <!-- Episodes will be dynamically inserted here -->
         </div>
@@ -24,11 +17,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const episodesContainer = document.getElementById('episodes-container');
-            const languageSelect = document.getElementById('languageSelect');
             
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
-            let dub = languageSelect.value === 'dub';
 
             function fetchEpisodes() {
                 episodesContainer.innerHTML = ''; // Clear the container before fetching new data
@@ -36,7 +27,10 @@
                 loader.classList.add('loader');
                 episodesContainer.appendChild(loader);
 
-                fetch(`https://api-p1xr.vercel.app/api/v2/episode/${id}?dub=${dub}`)
+                const apiUrl = `https://api-p1xr.vercel.app/api/v2/episode/${id}`; // Construct the API URL
+                console.log(apiUrl); // Log the full API URL to the console
+
+                fetch(apiUrl)
                     .then(response => response.json())
                     .then(data => {
                         loader.remove();
@@ -65,11 +59,6 @@
                         episodesContainer.innerHTML = '<p class="text-white">Failed to load episodes. Please try again later.</p>';
                     });
             }
-
-            languageSelect.addEventListener('change', () => {
-                dub = languageSelect.value === 'dub';
-                fetchEpisodes();
-            });
 
             fetchEpisodes(); // Initial fetch
         });
