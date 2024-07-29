@@ -62,7 +62,7 @@
         const newMovieContainer = document.getElementById('new-movie-container');
         const newScrollContainer = document.getElementById('new-scroll-container');
 
-        // Fetch data for the new section
+        // Fetch data for the Popular  section
         function fetchNewData() {
             // Show loading spinner
             newLoadingSpinner.classList.remove('hidden');
