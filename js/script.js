@@ -6,7 +6,7 @@
         const movieContainer = document.getElementById('movie-container');
         const scrollContainer = document.getElementById('scroll-container');
 
-        // Fetch data for the original section
+        // Fetch data for the Trending section
         function fetchOriginalData() {
             // Show loading spinner
             loadingSpinner.classList.remove('hidden');
@@ -55,7 +55,7 @@
 
         fetchOriginalData();
 
-        // New Section
+        // Popular  Section
         const newLoadingSpinner = document.getElementById('new-loading-spinner');
         const newErrorMessage = document.getElementById('new-error-message');
         const newNoDataMessage = document.getElementById('new-no-data-message');
