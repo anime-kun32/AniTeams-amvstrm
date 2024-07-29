@@ -1,4 +1,5 @@
-  document.getElementById('searchBar').addEventListener('input', async function () {
+ // fetch the search results
+ document.getElementById('searchBar').addEventListener('input', async function () {
         const query = this.value;
         if (query.length < 1) {
             document.getElementById('suggestions').style.display = 'none';
@@ -28,6 +29,8 @@
             suggestions.style.display = 'none';
         }
     });
+
+// microphone
 
     const micButton = document.getElementById('micButton');
     const searchBar = document.getElementById('searchBar');
