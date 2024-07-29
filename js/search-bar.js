@@ -78,6 +78,7 @@
         micButton.style.display = 'none';
         console.warn('Speech Recognition API not supported in this browser.');
     }
+// if there's no sound detected in five seconds, it stops 
 
     function resetNoSoundTimeout() {
         clearTimeout(noSoundTimeout);
