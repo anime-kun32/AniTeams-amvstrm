@@ -40,12 +40,9 @@
 
                             episodeCard.innerHTML = `
                                 <a href="watch.html?id=${episode.id}" class="block w-full">
-                                    <img src="${episode.image}" alt="${episode.title}" class="w-24 h-24 object-cover mr-4">
                                     <div>
                                         <h2 class="text-lg font-bold">${episode.title}</h2>
-                                        <p class="text-gray-400">Episode ${episode.number}</p>
-                                        <p>${episode.description || 'No description available'}</p>
-                                        <p class="text-gray-500 text-sm">${new Date(episode.createdAt).toLocaleDateString()}</p>
+                                        <p class="text-gray-400">Episode ID: ${episode.id}</p>
                                     </div>
                                 </a>
                             `;
