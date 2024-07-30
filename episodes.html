@@ -27,7 +27,7 @@
                 loader.classList.add('loader');
                 episodesContainer.appendChild(loader);
 
-                const apiUrl = `https://api-p1xr.vercel.app/api/v2/episode/${id}`; // Construct the API URL
+                const apiUrl = `https://api-p1xr.vercel.app/api/v1/episode/${id}`; // Construct the API URL
                 console.log(apiUrl); // Log the full API URL to the console
 
                 fetch(apiUrl)
