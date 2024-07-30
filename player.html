@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artplayer.js Example</title>
+    <!-- Include artplayer.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/artplayer/5.1.6/artplayer.js"></script>
+    <!-- Include hls.js for HLS support -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+    <style>
+        /* Make the player container fill the entire viewport */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #artplayer-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="artplayer-container"></div>
+
+    <script>
+        const player = new Artplayer({
+            container: '#artplayer-container',
+            autoSize: true,
+            controls: ['play', 'progress', 'time', 'volume', 'fullscreen'],
+            plugins: [
+                'artplayer-plugin-thumbnail', // Thumbnail plugin
+                'artplayer-plugin-chromecast', // Chromecast plugin
+                'artplayer-plugin-screenshot', // Screenshot plugin
+            ],
+            // Use HLS.js for HLS support
+            hlsConfig: {
+                enableWorker: true,
+                enableSoftwareAES: true,
+            },
+        });
+
+        // Fetch video data from the provided API
+        fetch('https://api-p1xr.vercel.app/api/v2/stream/sonic-x-episode-1') // Replace with your actual API endpoint
+            .then(response => response.json())
+            .then(data => {
+                player.source = {
+                    src: data.stream.multi.main.url, // Use the M3U8 URL from the API response
+                    type: 'application/x-mpegURL', // Set the correct MIME type for M3U8
+                };
+
+                // Load thumbnail VTT file
+                player.tracks = [{
+                    file: data.tracks.file, // Thumbnail VTT URL from the API response
+                    kind: 'thumbnails',
+                }];
+            })
+            .catch(error => {
+                console.error('Error fetching video data:', error);
+            });
+    </script>
+</body>
+</html>
