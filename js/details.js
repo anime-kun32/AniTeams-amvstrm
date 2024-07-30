@@ -11,7 +11,7 @@
             const nativeName = data.title.native;
             const genres = data.genres.join(', ');
             const additionalInfo = `${data.format} | ${data.type} | ${(data.score.averageScore / 10).toFixed(1)} | ${data.year}`;
-            const watchUrl = `episodes.html?id=${data.id}`;
+            const watchUrl = `episodes.html?id=${data.id_provider.idGogo}`;
 
             document.title = title; // Set document title
 
