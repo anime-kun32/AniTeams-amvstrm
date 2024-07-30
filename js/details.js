@@ -12,6 +12,8 @@
             const genres = data.genres.join(', ');
             const additionalInfo = `${data.format} | ${data.type} | ${(data.score.averageScore / 10).toFixed(1)} | ${data.year}`;
             const watchUrl = `episodes.html?id=${data.id_provider.idGogo}`;
+          const dubUrl = `episodes.html?id=${data.id_provider.idGogoDub}`;
+         
 
             document.title = title; // Set document title
 
@@ -38,6 +40,11 @@
                     </div>
                     <div class="mt-4">
                         <a href="${watchUrl}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Watch Now</a>
+                        
+                    </div>
+                     <div class="mt-4">
+                        <a href="${dubUrl}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dub</a>
+                        
                     </div>
                     
                 </div>
