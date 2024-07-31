@@ -60,7 +60,7 @@
   <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast/dist/artplayer-plugin-chromecast.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const baseApiUrl = 'https://api-p1xr.vercel.app/api/v2/stream'; // Base URL for the API
+      const baseApiUrl = 'https://api-p1xr.vercel.app/api/v2/stream'; // Base URL for the api , replace this with your own deployed api from amvstrm (https://github.com/amvstrm/api)
       let art = null; // Variable to store the Artplayer instance
 
       // Function to extract query parameters from the URL
@@ -78,7 +78,7 @@
 
       // Fetch video data from the API
       const fetchVideoData = () => {
-        const apiUrl = `${baseApiUrl}/${id}`;
+        const apiUrl = `${baseApiUrl}/${id}`; 
         console.log(`Fetching video data from: ${apiUrl}`); // Debug log
         return fetch(apiUrl)
           .then(response => {
@@ -94,16 +94,17 @@
 
       // Initialize or reinitialize the player with the new data
       const initializePlayer = (data) => {
-        if (!data || !data.stream || !data.stream.multi || !data.stream.tracks) {
+        if (!data || !data.stream || !data.stream.multi || !data.stream.multi.main || !data.stream.multi.backup) {
           console.error('Invalid data received from API:', data); // Debug log
           return;
         }
 
         const videoSource = data.stream.multi.main.url;
-        const subtitleTracks = data.stream.tracks.kind === 'thumbnails' ? [{
+        const backupSource = data.stream.multi.backup.url;
+        const thumbnailTrack = data.stream.tracks && data.stream.tracks.kind === 'thumbnails' ? {
           label: "Thumbnails",
           file: data.stream.tracks.file
-        }] : [];
+        } : null;
 
         // Set the document title based on the API response
         document.title = data.info.title;
@@ -141,14 +142,13 @@
               },
             },
             {
-              html: 'Subtitles',
-              selector: subtitleTracks.map(track => ({
-                html: track.label,
-                url: track.file,
-                default: track.default || false,
-              })),
+              html: 'Source',
+              selector: [
+                { html: 'Main', url: videoSource, default: true },
+                { html: 'Backup', url: backupSource },
+              ],
               onSelect: function (item) {
-                art.subtitle.switch(item.url, item.html);
+                art.switchUrl(item.url);
                 return item.html;
               },
             },
@@ -197,17 +197,6 @@
         // Append the back button to the player container
         const playerContainer = document.querySelector('.artplayer-app');
         playerContainer.appendChild(backButton);
-
-        // Hide controls when not hovering over player
-        playerContainer.addEventListener('mousemove', () => {
-          playerContainer.querySelector('.artplayer-controls').style.opacity = '1';
-          playerContainer.querySelector('.artplayer-controls').style.visibility = 'visible';
-        });
-
-        playerContainer.addEventListener('mouseleave', () => {
-          playerContainer.querySelector('.artplayer-controls').style.opacity = '0';
-          playerContainer.querySelector('.artplayer-controls').style.visibility = 'hidden';
-        });
       };
 
       // Fetch the initial video data and initialize the player
