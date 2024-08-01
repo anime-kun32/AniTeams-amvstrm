@@ -10,7 +10,7 @@
             const title = data.title.english;
             const nativeName = data.title.native;
             const genres = data.genres.join(', ');
-            const additionalInfo = `${data.format} | ${data.type} | ${(data.score.averageScore / 10).toFixed(1)} | ${data.year}`;
+            const additionalInfo = `${data.format} | ${data.season} | ${(data.score.averageScore / 10).toFixed(1)} | ${data.year} |${data.episodes}`;
             const watchUrl = `episodes.html?id=${data.id_provider.idGogo}`;
           const dubUrl = `episodes.html?id=${data.id_provider.idGogoDub}`;
          
