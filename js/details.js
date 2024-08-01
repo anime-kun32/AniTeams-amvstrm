@@ -1,5 +1,5 @@
  async function fetchAnimeDetails(id) {
-            const response = await fetch(`https://api-p1xr.vercel.app/api/v2/info/${id}`);
+            const response = await fetch(`https://api-p1xr.vercel.app/api/v2/info/${id}`); // replace with your deployed api from amvstrm 
             const data = await response.json();
             return data;
         }
@@ -7,7 +7,7 @@
         function createAnimeDetails(data) {
             const bannerImage = data.bannerImage;
             const coverImage = data.coverImage.large;
-            const title = data.title.userPreferred;
+            const title = data.title.english;
             const nativeName = data.title.native;
             const genres = data.genres.join(', ');
             const additionalInfo = `${data.format} | ${data.type} | ${(data.score.averageScore / 10).toFixed(1)} | ${data.year}`;
