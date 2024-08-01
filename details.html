@@ -12,6 +12,122 @@
 
     <div id="anime-details"></div>
 
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading....</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="css/details.css" rel="stylesheet">
+   
+</head>
+<body class="bg-gray-900 text-white">
+
+    <div id="anime-details"></div>
+
+    <div class="py-4">
+    <h5 class="text-lg font-bold text-white mb-2">Recommendations</h5>
+    <hr class="border-gray-600 mb-4">
+    <div id="recommendation-section" class="flex overflow-x-auto space-x-4 py-4" style="height: 300px;">
+        <!-- Cards will be dynamically inserted here -->
+    </div>
+</div>
+
+<style>
+    /* Custom scrollbar styling */
+    #recommendation-section::-webkit-scrollbar {
+        height: 8px;
+    }
+    #recommendation-section::-webkit-scrollbar-thumb {
+        background-color: #4a4a4a;
+        border-radius: 10px;
+    }
+    #recommendation-section::-webkit-scrollbar-track {
+        background: #333;
+    }
+
+    /* Hover effects for movie cards */
+    .recommendation-card:hover .movie-image {
+        filter: blur(4px);
+    }
+    .recommendation-card:hover .movie-info {
+        opacity: 1;
+    }
+    .recommendation-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .recommendation-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Styling for text overflow handling */
+    .movie-info h2,
+    .movie-info p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Loading spinner styling */
+    .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        background-color: #333; /* Updated background color */
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const recommendationSection = document.getElementById('recommendation-section');
+        const loader = document.createElement('div');
+        loader.classList.add('loader');
+        recommendationSection.appendChild(loader);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        fetch(`https://api-p1xr.vercel.app/api/v2/info/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                loader.remove();
+                data.results.forEach(anime => {
+                    const card = document.createElement('div');
+                    card.classList.add('recommendation-card', 'relative', 'w-60', 'flex-shrink-0', 'bg-gray-800', 'rounded-lg', 'overflow-hidden');
+
+                    card.innerHTML = `
+                        <a href="details.html?id=${anime.id}" class="block w-full h-full">
+                            <img src="${anime.coverImage.large}" alt="${anime.title.english}" class="movie-image w-full h-full object-cover">
+                            <div class="movie-info absolute inset-0 bg-black bg-opacity-75 text-white p-4 opacity-0 transition-opacity duration-200">
+                                <h2 class="text-lg font-bold">${anime.title.english}</h2>
+                                <p>Season: ${anime.season}</p>
+                                <p>Format: ${anime.format}</p>
+                                <p>Type: ${anime.type}</p>
+                                <p>Genres: ${anime.genres.join(', ')}</p>
+                            </div>
+                        </a>
+                    `;
+
+                    recommendationSection.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                loader.remove();
+                recommendationSection.innerHTML = '<p class="text-white">No related </p>';
+            });
+    });
+</script>
     <div class="py-4">
     <h5 class="text-lg font-bold text-white mb-2">Recommendations</h5>
     <hr class="border-gray-600 mb-4">
