@@ -1,7 +1,7 @@
 # Projetc details 
 AniTeams , but this time it uses Amvstrm api , and a new layout as well .
 
-#Domains
+# Domains
 https://aniteams-amvstrm.vercel.app
 https://ani-teams-different-server.vercel.app
 # Usage 
