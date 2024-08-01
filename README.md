@@ -1,5 +1,5 @@
 # Projetc details 
-AniTeams , but this time it uses Amvstrm api , and a new layout as well .
+AniTeams , but this time it uses Amvstrm api , and a new layout as well . The layout might slightly similar to amvstrm official website 
 
 # Domains
 - https://aniteams-amvstrm.vercel.app
