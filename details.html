@@ -11,53 +11,38 @@
 <body class="bg-gray-900 text-white">
 
     <div id="anime-details"></div>
-
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading....</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="css/details.css" rel="stylesheet">
-   
-</head>
-<body class="bg-gray-900 text-white">
-
-    <div id="anime-details"></div>
-
-    <div class="py-4">
-    <h5 class="text-lg font-bold text-white mb-2">Recommendations</h5>
+<div class="py-4">
+    <h5 class="text-lg font-bold text-white mb-2">Related</h5>
     <hr class="border-gray-600 mb-4">
-    <div id="recommendation-section" class="flex overflow-x-auto space-x-4 py-4" style="height: 300px;">
+    <div id="related-section" class="flex overflow-x-auto space-x-4 py-4" style="height: 300px;">
         <!-- Cards will be dynamically inserted here -->
     </div>
 </div>
 
 <style>
     /* Custom scrollbar styling */
-    #recommendation-section::-webkit-scrollbar {
+    #related-section::-webkit-scrollbar {
         height: 8px;
     }
-    #recommendation-section::-webkit-scrollbar-thumb {
+    #related-section::-webkit-scrollbar-thumb {
         background-color: #4a4a4a;
         border-radius: 10px;
     }
-    #recommendation-section::-webkit-scrollbar-track {
+    #related-section::-webkit-scrollbar-track {
         background: #333;
     }
 
     /* Hover effects for movie cards */
-    .recommendation-card:hover .movie-image {
+    .related-card:hover .movie-image {
         filter: blur(4px);
     }
-    .recommendation-card:hover .movie-info {
+    .related-card:hover .movie-info {
         opacity: 1;
     }
-    .recommendation-card {
+    .related-card {
         transition: transform 0.2s, box-shadow 0.2s;
     }
-    .recommendation-card:hover {
+    .related-card:hover {
         transform: translateY(-8px);
         box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
     }
@@ -89,10 +74,10 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const recommendationSection = document.getElementById('recommendation-section');
+        const relatedSection = document.getElementById('related-section');
         const loader = document.createElement('div');
         loader.classList.add('loader');
-        recommendationSection.appendChild(loader);
+        relatedSection.appendChild(loader);
 
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
@@ -103,7 +88,7 @@
                 loader.remove();
                 data.results.forEach(anime => {
                     const card = document.createElement('div');
-                    card.classList.add('recommendation-card', 'relative', 'w-60', 'flex-shrink-0', 'bg-gray-800', 'rounded-lg', 'overflow-hidden');
+                    card.classList.add('related-card', 'relative', 'w-60', 'flex-shrink-0', 'bg-gray-800', 'rounded-lg', 'overflow-hidden');
 
                     card.innerHTML = `
                         <a href="details.html?id=${anime.id}" class="block w-full h-full">
@@ -118,16 +103,18 @@
                         </a>
                     `;
 
-                    recommendationSection.appendChild(card);
+                    relatedSection.appendChild(card);
                 });
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
                 loader.remove();
-                recommendationSection.innerHTML = '<p class="text-white">No related </p>';
+                relatedSection.innerHTML = '<p class="text-white">No recommendations provided by Anilist</p>';
             });
     });
 </script>
+
+    
     <div class="py-4">
     <h5 class="text-lg font-bold text-white mb-2">Recommendations</h5>
     <hr class="border-gray-600 mb-4">
