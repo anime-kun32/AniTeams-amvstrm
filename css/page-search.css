@@ -1,4 +1,4 @@
-/* styles.css */
+
 body {
     background-color: #333;
     color: #fff;
@@ -34,21 +34,26 @@ body {
 
 .movie-cards-container {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 24px;
+    padding: 20px;
 }
 
 #card {
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: #444;
     position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background-color: #444;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease;
 }
 
 #card img {
     width: 100%;
-    border-radius: 12px 12px 0 0;
+    height: auto;
+    border-radius: 12px;
     transition: filter 0.3s ease;
 }
 
@@ -65,16 +70,15 @@ body {
     color: #fff;
     padding: 10px;
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
     font-size: 14px;
 }
 
-a#card {
-    text-decoration: none;
-    color: inherit;
-    display: block;
+#card:hover .card-info {
+    opacity: 1;
+    visibility: visible;
 }
 
 .mic-popup {
@@ -87,6 +91,11 @@ a#card {
     display: flex;
     align-items: center;
     justify-content: center;
+    visibility: hidden;
+}
+
+.mic-popup.active {
+    visibility: visible;
 }
 
 .sound-waves {
