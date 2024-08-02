@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Page</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/page-search.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="search-container mx-auto max-w-3xl p-4">
         <div class="search-bar-container flex relative">
             <input type="text" id="search-bar" class="search-bar w-full p-4 rounded-lg bg-gray-600 text-white" placeholder="Search...">
             <button id="mic-button" class="mic-button absolute right-2 top-1/2 transform -translate-y-1/2">
-                <img src="mic-icon.png" alt="Microphone" class="w-6 h-6">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" alt="Microphone" class="w-6 h-6">
             </button>
         </div>
-        <div id="results-container" class="movie-cards-container mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        <div id="results-container" class="movie-cards-container mt-4"></div>
         <div id="loading-spinner" class="loading-spinner"></div>
-        <div id="mic-popup" class="mic-popup hidden">
+        <div id="mic-popup" class="mic-popup">
             <div class="sound-waves">
                 <div class="wave"></div>
                 <div class="wave"></div>
@@ -25,6 +25,6 @@
             </div>
         </div>
     </div>
-    <script src="js/page-search.js"></script>
+    <script src="js/search-bar.js"></script>
 </body>
 </html>
