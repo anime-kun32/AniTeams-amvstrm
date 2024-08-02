@@ -1,4 +1,11 @@
 /* styles.css */
+body {
+    background-color: #333;
+    color: #fff;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
 .search-container {
     position: relative;
     width: 100%;
@@ -44,29 +51,40 @@
     height: 24px;
 }
 
-.results-container {
+.movie-cards-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 30px; /* Increased gap between cards */
+    padding: 20px;
+    justify-content: flex-start;
 }
 
-.card {
-    position: relative;
-    width: calc(33.333% - 10px);
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, filter 0.3s ease;
+#card {
+    width: 250px; /* Updated width */
+    text-decoration: none; /* Remove underline from links */
+    color: inherit; /* Inherit text color */
+    position: relative; /* Positioning context for poster */
+    overflow: hidden; /* Hide overflow to prevent text spillover */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #444; /* Updated card background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for cards */
+    transition: transform 0.3s ease, opacity 0.3s ease; /* Animation on filter */
+    margin: 10px; /* Updated margin */
+    display: flex;
+    flex-direction: column; /* Stack image and title vertically */
+    justify-content: flex-start; /* Ensure content starts from the top */
+    height: auto; /* Allow card to expand based on content */
 }
 
-.card img {
+#card img {
     width: 100%;
     height: auto;
+    border-radius: 10px 10px 0 0; /* Rounded top edges */
     transition: filter 0.3s ease;
 }
 
-.card:hover img {
-    filter: blur(5px);
+#card:hover img {
+    filter: blur(5px); /* Apply blur effect on hover */
 }
 
 .card-info {
@@ -81,12 +99,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.card:hover .card-info {
-    opacity: 1;
+    font-size: 14px;
 }
 
 .loading-spinner {
