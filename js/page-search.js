@@ -1,4 +1,4 @@
-// script.js
+
 document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('search-bar');
     const resultsContainer = document.getElementById('results-container');
@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     recognition.lang = 'en-US'; // Default language
 
     let audioInterval;
-    
+
     function startListening(language) {
         recognition.lang = language;
         recognition.start();
-        micPopup.classList.remove('hidden');
+        micPopup.classList.add('active');
 
         // Animate sound waves based on actual sound
         audioInterval = setInterval(() => {
@@ -28,15 +28,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function stopListening() {
         recognition.stop();
-        micPopup.classList.add('hidden');
+        micPopup.classList.remove('active');
         clearInterval(audioInterval);
     }
 
     micButton.addEventListener('click', () => {
-        if (micPopup.classList.contains('hidden')) {
-            startListening('en-US'); // Start with English
-        } else {
+        if (micPopup.classList.contains('active')) {
             stopListening();
+        } else {
+            startListening('en-US'); // Start with English
         }
     });
 
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let noSoundTimer;
     micButton.addEventListener('click', () => {
-        if (!micPopup.classList.contains('hidden')) {
+        if (micPopup.classList.contains('active')) {
             noSoundTimer = setTimeout(() => {
                 stopListening();
             }, 5000); // Hide popup after 5 seconds of no sound
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingSpinner.style.display = 'block';
 
         try {
-            const response = await fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`);
+            const response = await fetch(`https://api.example.com/search?query=${query}`);
             const data = await response.json();
             
             if (data.code === 200) {
