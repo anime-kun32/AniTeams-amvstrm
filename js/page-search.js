@@ -3,6 +3,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBar = document.getElementById('search-bar');
     const resultsContainer = document.getElementById('results-container');
     const loadingSpinner = document.getElementById('loading-spinner');
+    const micButton = document.getElementById('mic-button');
+    const micPopup = document.getElementById('mic-popup');
+
+    // Set up Speech Recognition
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US'; // Default language
+
+    let audioInterval;
+    
+    function startListening(language) {
+        recognition.lang = language;
+        recognition.start();
+        micPopup.classList.remove('hidden');
+
+        // Animate sound waves based on actual sound
+        audioInterval = setInterval(() => {
+            const waves = document.querySelectorAll('.wave');
+            waves.forEach(wave => {
+                wave.style.height = `${30 + Math.random() * 20}px`; // Random height for simulation
+            });
+        }, 100);
+    }
+
+    function stopListening() {
+        recognition.stop();
+        micPopup.classList.add('hidden');
+        clearInterval(audioInterval);
+    }
+
+    micButton.addEventListener('click', () => {
+        if (micPopup.classList.contains('hidden')) {
+            startListening('en-US'); // Start with English
+        } else {
+            stopListening();
+        }
+    });
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.toLowerCase();
+        searchBar.value = transcript;
+        searchBar.dispatchEvent(new Event('input')); // Trigger search
+        stopListening();
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        stopListening();
+    };
+
+    let noSoundTimer;
+    micButton.addEventListener('click', () => {
+        if (!micPopup.classList.contains('hidden')) {
+            noSoundTimer = setTimeout(() => {
+                stopListening();
+            }, 5000); // Hide popup after 5 seconds of no sound
+        }
+    });
 
     searchBar.addEventListener('input', async () => {
         const query = searchBar.value.trim();
@@ -19,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.code === 200) {
                 resultsContainer.innerHTML = data.results.map(result => `
-                    <div id="card">
+                    <a href="details.html?id=${result.id}" id="card">
                         <img src="${result.coverImage.extraLarge}" alt="${result.title.userPreferred}">
                         <div class="card-info">
                             <div class="title">${result.title.userPreferred}</div>
@@ -29,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="season-year">${result.seasonYear}</div>
                             <div class="episodes">${result.episodes} episodes</div>
                         </div>
-                    </div>
+                    </a>
                 `).join('');
             }
         } catch (error) {
