@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingSpinner.style.display = 'block';
 
         try {
-            const response = await fetch(`https://api.example.com/search?query=${query}`);
+            const response = await fetch(`https://api-p1xr.vercel.app/api/v2/search?q=${query}`);
             const data = await response.json();
             
             if (data.code === 200) {
