@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.code === 200) {
                 resultsContainer.innerHTML = data.results.map(result => `
-                    <div class="card">
+                    <div id="card">
                         <img src="${result.coverImage.extraLarge}" alt="${result.title.userPreferred}">
                         <div class="card-info">
                             <div class="title">${result.title.userPreferred}</div>
