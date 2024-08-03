@@ -5,12 +5,13 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://w
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBgonWKzerFz_YMUHBFIbGkGAr2de0OAQo",
+  authDomain: "aniteams-83c62.firebaseapp.com",
+  projectId: "aniteams-83c62",
+  storageBucket: "aniteams-83c62.appspot.com",
+  messagingSenderId: "571785825154",
+  appId: "1:571785825154:web:d8f684c660c28eab121d9b",
+  measurementId: "G-72YGQR0CPH"
 };
 
 // Initialize Firebase
