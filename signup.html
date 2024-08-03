@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="css/account.css">
+</head>
+<body>
+    <div class="container">
+        <div id="banner" class="banner"></div>
+
+        <form id="signUpForm">
+            <h2>Sign Up</h2>
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="file" id="profilePicture" accept="image/*">
+            <div id="progressContainer" style="display: none;">
+                <progress id="uploadProgress" value="0" max="100"></progress>
+                <span id="progressText">0%</span>
+            </div>
+            <button type="submit">Sign Up</button>
+            <p>Already have an account? <a href="sign-in.html">Sign In</a></p>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js"></script>
+    <script src="js/account.js"></script>
+</body>
+</html>
