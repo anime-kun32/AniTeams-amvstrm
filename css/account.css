@@ -1,86 +1,114 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #333;
     color: #fff;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
 
 .container {
-    max-width: 400px;
-    width: 100%;
+    background-color: #444;
     padding: 20px;
-    box-sizing: border-box;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 100%;
 }
 
 h2 {
     text-align: center;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-input, button {
-    margin-bottom: 10px;
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="file"],
+button {
+    display: block;
+    width: calc(100% - 20px);
+    margin: 10px auto;
     padding: 10px;
+    border-radius: 4px;
     border: none;
-    border-radius: 5px;
 }
 
-input {
-    background-color: #444;
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    background-color: #555;
     color: #fff;
 }
 
+input[type="file"] {
+    background-color: #666;
+}
+
 button {
-    background-color: #555;
+    background-color: #007bff;
     color: #fff;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #666;
+    background-color: #0056b3;
 }
 
+/* Link Styles */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Banner Styles */
 .banner {
     display: none;
-    text-align: center;
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    position: relative;
+    margin-bottom: 10px;
+    text-align: center;
+    border-radius: 4px;
 }
 
 .banner.green {
-    background-color: green;
+    background-color: #28a745;
+    color: #fff;
 }
 
 .banner.red {
-    background-color: red;
+    background-color: #dc3545;
+    color: #fff;
 }
 
-.banner::after {
-    content: '';
-    display: block;
-    height: 5px;
-    background-color: #fff;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+/* Progress Styles */
+#progressContainer {
+    margin: 10px auto;
+    text-align: center;
+}
+
+progress {
     width: 100%;
-    animation: banner-timer 5s linear forwards;
+    height: 20px;
+    border-radius: 4px;
+    appearance: none;
 }
 
-@keyframes banner-timer {
-    from {
-        width: 100%;
-    }
-    to {
-        width: 0;
-    }
+progress::-webkit-progress-bar {
+    background: #666;
+    border-radius: 4px;
+}
+
+progress::-webkit-progress-value {
+    background: #007bff;
+    border-radius: 4px;
+}
+
+#progressText {
+    margin-top: 5px;
 }
