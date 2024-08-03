@@ -66,12 +66,14 @@ function checkUserSession() {
 }
 
 // Toggle form visibility
-showSignUpForm.addEventListener('click', () => {
+showSignUpForm.addEventListener('click', (e) => {
+    e.preventDefault();
     signInForm.style.display = 'none';
     signUpForm.style.display = 'block';
 });
 
-showSignInForm.addEventListener('click', () => {
+showSignInForm.addEventListener('click', (e) => {
+    e.preventDefault();
     signUpForm.style.display = 'none';
     signInForm.style.display = 'block';
 });
