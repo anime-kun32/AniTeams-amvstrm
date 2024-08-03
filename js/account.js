@@ -65,17 +65,15 @@ function checkUserSession() {
     }
 }
 
-// Handle form toggling
-document.getElementById('showSignUpForm').addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent default link behavior
-    document.getElementById('signInForm').style.display = 'none';
-    document.getElementById('signUpForm').style.display = 'block';
+// Toggle form visibility
+showSignUpForm.addEventListener('click', () => {
+    signInForm.style.display = 'none';
+    signUpForm.style.display = 'block';
 });
 
-document.getElementById('showSignInForm').addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent default link behavior
-    document.getElementById('signUpForm').style.display = 'none';
-    document.getElementById('signInForm').style.display = 'block';
+showSignInForm.addEventListener('click', () => {
+    signUpForm.style.display = 'none';
+    signInForm.style.display = 'block';
 });
 
 // Handle file upload
