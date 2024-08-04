@@ -1,61 +1,148 @@
 body {
-        background-color: #333;
-        color: #fff;
-        margin: 0;
-        font-family: Arial, sans-serif;
-        overflow-y: scroll;
-    }
+    background-color: #181818;
+    color: #fff;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    overflow-y: scroll;
+}
 
-    body::-webkit-scrollbar {
-        width: 8px;
-    }
+body::-webkit-scrollbar {
+    width: 8px;
+}
 
-    body::-webkit-scrollbar-track {
-        background: #333;
-    }
+body::-webkit-scrollbar-track {
+    background: #181818;
+}
 
-    body::-webkit-scrollbar-thumb {
-        background: #555;
-        border-radius: 5px;
-    }
+body::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 5px;
+}
 
-    body::-webkit-scrollbar-thumb:hover {
-        background: #666;
-    }
-        .banner {
-            position: relative;
-            background-size: cover;
-            background-position: center;
-            height: 300px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .banner-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .anime-card {
-            position: relative;
-            top: -150px;
-            margin-left: 20px;
-        }
-        .anime-details {
-            margin-top: -100px;
-            padding: 20px;
-        }
-        .genre-list {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .genre-list li {
-            margin-right: 10px;
-            background: #444;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
+body::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+.banner {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 300px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.anime-card {
+    position: relative;
+    top: -150px;
+    margin-left: 20px;
+}
+
+.anime-details {
+    margin-top: -100px;
+    padding: 20px;
+}
+
+.genre-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.genre-list li {
+    margin-right: 10px;
+    background: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.875rem;
+}
+
+.text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    font-weight: 700;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    color: #b3b3b3;
+}
+
+.bg-blue-500 {
+    background-color: #e50914;
+}
+
+.hover\:bg-blue-700:hover {
+    background-color: #b00610;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.rounded {
+    border-radius: 0.375rem;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.container {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.relative {
+    position: relative;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.rounded {
+    border-radius: 0.375rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.mt-4 img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
