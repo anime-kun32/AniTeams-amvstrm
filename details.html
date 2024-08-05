@@ -16,18 +16,9 @@
     <div id="anime-details" class="py-4">
         <!-- Anime details will be dynamically inserted here -->
     </div>
-    <div id="video-container" class="video-container">
-        
-        <div class="play-button-container">
-    <div class="play-button" onclick="document.getElementById('video-container').style.display='flex';"></div>
-</div>
 
-<div id="video-container" class="video-container">
-    <button class="close-button" onclick="document.getElementById('video-container').style.display='none';">×</button>
-    <iframe id="video-frame" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-</div>
+       <style>
 
-<style>
 .video-container {
     display: none;
     position: fixed;
@@ -59,19 +50,11 @@
     cursor: pointer;
 }
 
-.play-button-container {
-    text-align: center;
-    margin-top: 20px;
-}
+</style>    <div id="video-container" class="video-container">
 
-.play-button {
-    width: 100px; /* Set width as per your PNG file dimensions */
-    height: 100px; /* Set height as per your PNG file dimensions */
-    background-image: url('./play.png'); /* Replace with the actual path to your PNG file */
-    background-size: cover;
-    cursor: pointer;
-}
-</style>
+        <button class="close-button" onclick="closeVideo()">×</button>
+        <iframe id="video-frame" src="" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
 
         <!-- Cards will be dynamically inserted here -->
     </div>
