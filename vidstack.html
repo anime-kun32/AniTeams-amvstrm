@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidstack Video Player</title>
+<link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css">
+<link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css">
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+vds-player {
+    width: 100%;
+    height: 100%;
+    max-width: 1240px;
+    max-height: 605px;
+    background: #000;
+    box-sizing: border-box;
+}
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    vds-player {
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+@media (max-width: 1024px) {
+    .container {
+        padding: 10px;
+    }
+    vds-player {
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <vds-player id="player"></vds-player>
+</div>
+<script src="https://cdn.vidstack.io/player" type="module"></script>
+<script src="https://cdn.vidstack.io/player.dev" type="module"></script>
+<script src="https://cdn.vidstack.io/player@1.11.21" type="module"></script>
+<script type="module">
+import { VidstackPlayer, VidstackPlayerLayout } from 'https://cdn.vidstack.io/player';
+
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        id: params.get('id')
+    };
+}
+
+async function fetchVideoData(id) {
+    const response = await fetch(`https://api-p1xr.vercel.app/api/v2/stream/${id}`);
+    const data = await response.json();
+    return data;
+}
+
+async function initializePlayer() {
+    const params = getUrlParams();
+    const data = await fetchVideoData(params.id);
+
+    const mainStream = data.stream.multi.main.url;
+    const backupStream = data.stream.multi.backup.url;
+    const thumbnailTrack = data.stream.tracks;
+
+    const player = await VidstackPlayer.create({
+        target: '#player',
+        title: data.info.title,
+        src: mainStream,
+        poster: 'https://cdn.discordapp.com/attachments/1259130947169816708/1270051285869006908/21e4db44358fdcf37723e8b87437c342.png?ex=66b24aee&is=66b0f96e&hm=294f01ea9a34e575bf00750818627ba5f1ffee0bbb3c3f9ea9d73e143fcfada1&',
+        layout: new VidstackPlayerLayout({
+            thumbnails: thumbnailTrack ? thumbnailTrack : '',
+        }),
+    });
+
+    // Event listeners for play and pause
+    player.addEventListener('play', () => {
+        console.log('Video is playing');
+    });
+
+    player.addEventListener('pause', () => {
+        console.log('Video is paused');
+    });
+
+    // Add settings menu for switching between main and backup streams
+    player.settings = [
+        {
+            html: 'Stream',
+            selector: [
+                { html: 'Main', url: mainStream, default: true },
+                { html: 'Backup', url: backupStream },
+            ],
+            onSelect: function (item) {
+                player.src = item.url;
+                return item.html;
+            },
+        },
+    ];
+}
+
+// Initialize player
+initializePlayer();
+</script>
+</body>
+</html>
