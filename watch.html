@@ -85,6 +85,16 @@
           });
       };
 
+      // Function to save the current time to local storage
+      const saveCurrentTime = (videoId, time) => {
+        localStorage.setItem(`lastSeen-${videoId}`, time);
+      };
+
+      // Function to get the last seen time from local storage
+      const getLastSeenTime = (videoId) => {
+        return localStorage.getItem(`lastSeen-${videoId}`);
+      };
+
       // Initialize or reinitialize the player with the new data
       const initializePlayer = (data) => {
         if (!data || !data.stream || !data.stream.multi || !data.stream.multi.main || !data.stream.multi.backup) {
@@ -101,6 +111,9 @@
 
         // Set the document title based on the API response
         document.title = data.info.title;
+
+        // Get the last seen time from local storage
+        const lastSeenTime = getLastSeenTime(id);
 
         // Destroy the existing player if it exists
         if (art) {
@@ -195,6 +208,34 @@
           },
           lock: true, // Enable control lock feature
         });
+
+        // Event listener to save the current time periodically
+        art.on('video:timeupdate', () => {
+          saveCurrentTime(id, art.currentTime);
+        });
+
+        // Check for last seen time and prompt the user
+        if (lastSeenTime) {
+          art.notice.show(
+            `Resume from last seen position?`,
+            [
+              {
+                html: 'Yes',
+                onClick: () => {
+                  art.currentTime = parseFloat(lastSeenTime);
+                  art.notice.hide();
+                },
+              },
+              {
+                html: 'No',
+                onClick: () => {
+                  art.notice.hide();
+                },
+              },
+            ],
+            5000,
+          );
+        }
 
         // Create and style the back button
         const backButton = document.createElement('div');
