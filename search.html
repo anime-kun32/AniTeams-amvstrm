@@ -138,7 +138,8 @@
                         container.innerHTML = ''; // Clear the container
 
                         data.results.forEach(anime => {
-                            const card = document.createElement('div');
+                            const card = document.createElement('a');
+                            card.href = `details.html?id=${anime.id}`;
                             card.className = 'movie-card';
 
                             card.innerHTML = `
