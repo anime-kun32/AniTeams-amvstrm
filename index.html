@@ -186,7 +186,73 @@
         100% { transform: rotate(360deg); }
     }
 </style>
+  <!-- Bottom Toolbar -->
+    <div class="bottom-toolbar">
+        <a href="#home" class="toolbar-button">Home</a>
+        <a href="#search" class="toolbar-button">Search</a>
+    </div>
+  <style>
+        /* Basic reset for margin and padding */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        /* Styling for the bottom toolbar */
+        .bottom-toolbar {
+            position: fixed;
+            bottom: 10px; /* Space between the bottom of the page and the toolbar */
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3); /* Shadow effect */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px; /* Reduced height */
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        .toolbar-button {
+            color: white;
+            text-decoration: none;
+            padding: 0 20px;
+            line-height: 50px; /* Align text vertically */
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transition */
+        }
+
+        .toolbar-button:hover {
+            background-color: #555;
+            transform: scale(1.1); /* Hover effect */
+        }
+
+        /* Ensure the content doesn't overlap with the toolbar */
+        .content {
+            padding-bottom: 70px; /* Enough padding to accommodate the toolbar */
+        }
+
+        @keyframes vibrate {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
+        }
+
+        .vibrate {
+            animation: vibrate 0.2s linear;
+        }
+    </style>
+    <script>
+        document.querySelectorAll('.toolbar-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.add('vibrate');
+                setTimeout(() => {
+                    this.classList.remove('vibrate');
+                }, 200); // Vibration effect duration
+            });
+        });
+    </script>
 
 
 
