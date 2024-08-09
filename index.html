@@ -271,6 +271,78 @@
         });
     });
 </script>
+<!-- Container Div -->
+<div class="relative">
+
+    <!-- Bottom Menu -->
+    <div class="fixed bottom-0 left-0 w-full flex justify-around bg-gray-800 p-2 border-t border-gray-700 z-50">
+        <button onclick="handleClick('index.html')" class="text-white hover:text-green-400">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+        <button onclick="handleClick('search.html')" class="text-white hover:text-green-400">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 21l-6-6M10 4a6 6 0 1 0 0 12a6 6 0 0 0 0-12"/></svg>
+        </button>
+        <button onclick="toggleSidebar()" class="text-white hover:text-green-400">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M3 12h18m-18 6h18"/></svg>
+        </button>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="fixed top-0 right-0 w-64 h-full bg-gray-900 text-white transform translate-x-full transition-transform duration-300 z-40">
+        <div class="flex justify-end p-4">
+            <button onclick="closeSidebar()" class="text-2xl">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="p-4">
+            <div onclick="handleClick('signOut')" class="cursor-pointer py-2 hover:bg-gray-700">Sign Out</div>
+            <div onclick="handleClick('bookmarks.html')" class="cursor-pointer py-2 hover:bg-gray-700">Bookmarks</div>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black opacity-50 hidden z-30" onclick="closeSidebar()"></div>
+
+    <!-- JavaScript -->
+    <script>
+        function handleClick(action) {
+            if (action === 'signOut') {
+                signOut();
+            } else if (action.endsWith('.html')) {
+                // Vibrate and navigate to the specified page
+                navigator.vibrate(50);
+                window.location.href = action;
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            sidebar.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            if (!sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        async function signOut() {
+            try {
+                await firebase.auth().signOut();
+                window.location.href = 'index.html'; // Redirect after sign-out
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+    </script>
+
+</div>
+
 <script src="js/script.js"></script>
     <script src="js/search-bar.js"></script>
 </body>
