@@ -3,33 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="css/account.css">
+    <title>Sign Up / Sign In</title>
+    <style>
+        /* Body and Background Image */
+body {
+    background: url('https://pic.re/image') no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7); /* Fallback for older browsers */
+    background-blend-mode: overlay;
+}
+
+/* Container Styling */
+.container {
+    background-color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    width: 300px;
+}
+
+/* Form Inputs */
+input[type="text"], input[type="password"], input[type="file"] {
+    background-color: #555;
+    color: #fff;
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+/* File Input Customization */
+input[type="file"] {
+    padding: 5px;
+    cursor: pointer;
+    background-color: #444;
+    text-align: center;
+}
+
+/* Custom Button */
+button {
+    background-color: #0066cc;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+/* Button Hover Effect */
+button:hover {
+    background-color: #004c99;
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 5px;
+    background-color: #00ff00;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Status Banner */
+#status-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #28a745;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    z-index: 1000;
+    transform: translateY(-100%);
+    transition: transform 0.5s ease-in-out;
+}
+
+#status-banner.error {
+    background-color: #dc3545;
+}
+
+#status-timeline {
+    height: 5px;
+    background-color: #fff;
+    width: 100%;
+    transition: width 5s linear;
+}
+
+/* Hidden Class */
+.hidden {
+    display: none;
+}
+
+/* Links */
+a {
+    color: #00ccff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #00a3cc;
+}
+
+    </style>
 </head>
 <body>
     <div class="container">
-        <div id="banner" class="banner"></div>
-
-        <form id="signUpForm">
-            <h2>Sign Up</h2>
-            <input type="text" id="name" placeholder="Full Name" required>
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <input type="file" id="profilePicture" accept="image/*">
-            <div id="progressContainer" style="display: none;">
-                <progress id="uploadProgress" value="0" max="100"></progress>
-                <span id="progressText">0%</span>
+        <div id="auth-container">
+            <div id="signup-form">
+                <h2>Sign Up</h2>
+                <input type="text" id="signup-name" placeholder="Name">
+                <input type="text" id="signup-email" placeholder="Email">
+                <input type="password" id="signup-password" placeholder="Password">
+                <input type="file" id="profile-picture">
+                <div id="upload-progress" class="progress-bar"></div>
+                <button onclick="window.signUp()">Sign Up</button>
+                <p>Already have an account? <a href="#" onclick="window.showLoginForm()">Login</a></p>
             </div>
-            <button type="submit">Sign Up</button>
-            <p>Already have an account? <a href="sign-in.html">Sign In</a></p>
-        </form>
+            <div id="login-form" class="hidden">
+                <h2>Sign In</h2>
+                <input type="text" id="login-email" placeholder="Email">
+                <input type="password" id="login-password" placeholder="Password">
+                <button onclick="window.signIn()">Sign In</button>
+                <p>Don't have an account? <a href="#" onclick="window.showSignupForm()">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+    <div id="status-banner" class="hidden">
+        <span id="status-message"></span>
+        <div id="status-timeline"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage.js"></script>
-    <script src="js/account.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        // Import necessary Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js";
+import { getDatabase, ref as dbRef, set } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBgonWKzerFz_YMUHBFIbGkGAr2de0OAQo",
+  authDomain: "aniteams-83c62.firebaseapp.com",
+  databaseURL: "https://aniteams-83c62-default-rtdb.firebaseio.com",
+  projectId: "aniteams-83c62",
+  storageBucket: "aniteams-83c62.appspot.com",
+  messagingSenderId: "571785825154",
+  appId: "1:571785825154:web:d8f684c660c28eab121d9b",
+  measurementId: "G-72YGQR0CPH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const storage = getStorage(app);
+const db = getFirestore(app);
+const database = getDatabase(app);
+
+window.showSignupForm = function() {
+    document.getElementById('signup-form').classList.remove('hidden');
+    document.getElementById('login-form').classList.add('hidden');
+}
+
+window.showLoginForm = function() {
+    document.getElementById('login-form').classList.remove('hidden');
+    document.getElementById('signup-form').classList.add('hidden');
+}
+
+function showStatusBanner(message, isSuccess) {
+    const banner = document.getElementById('status-banner');
+    const messageSpan = document.getElementById('status-message');
+    const timeline = document.getElementById('status-timeline');
+
+    messageSpan.innerText = message;
+    banner.className = isSuccess ? 'success' : 'error';
+    timeline.style.width = '100%';
+    banner.classList.remove('hidden');
+
+    setTimeout(() => {
+        banner.classList.add('hidden');
+    }, 5000); // Banner visible for 5 seconds
+}
+
+window.signUp = async function() {
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const name = document.getElementById('signup-name').value;
+    const file = document.getElementById('profile-picture').files[0];
+
+    try {
+        // Create a user with email and password
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        if (file) {
+            const storageReference = storageRef(storage, 'profile_pictures/' + file.name);
+            const uploadTask = uploadBytesResumable(storageReference, file);
+
+            uploadTask.on('state_changed', (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                document.getElementById('upload-progress').style.width = progress + '%';
+                document.getElementById('upload-progress').innerText = 'Uploading ' + Math.round(progress) + '%';
+            }, (error) => {
+                console.error('Upload failed:', error);
+                showStatusBanner('Upload failed: ' + error.message, false);
+            }, async () => {
+                const downloadURL = await getDownloadURL(storageReference);
+                console.log('Upload successful!');
+                document.getElementById('upload-progress').style.width = '100%';
+                document.getElementById('upload-progress').innerText = 'Upload complete';
+                showStatusBanner('Upload complete', true);
+
+                // Save user data to Firestore
+                await setDoc(doc(db, 'users', user.uid), {
+                    name: name,
+                    email: email,
+                    profilePictureURL: downloadURL
+                });
+
+                // Create bookmarks path in Realtime Database
+                await set(dbRef(database, 'bookmarks/' + user.uid), {});
+
+                // Redirect to account.html
+                window.location.href = 'account.html';
+            });
+        } else {
+            // Save user data to Firestore without profile picture
+            await setDoc(doc(db, 'users', user.uid), {
+                name: name,
+                email: email,
+                profilePictureURL: null
+            });
+
+            // Create bookmarks path in Realtime Database
+            await set(dbRef(database, 'bookmarks/' + user.uid), {});
+
+            // Redirect to account.html
+            window.location.href = 'account.html';
+        }
+    } catch (error) {
+        console.error('Error signing up:', error);
+        showStatusBanner('Error signing up: ' + error.message, false);
+    }
+}
+
+window.signIn = async function() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showStatusBanner('Login successful!', true);
+        // Redirect to account.html
+        window.location.href = 'account.html';
+    } catch (error) {
+        console.error('Error signing in:', error);
+        showStatusBanner('Error signing in: ' + error.message, false);
+    }
+}
+
+// Check if user is already signed in
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        window.location.href = 'account.html'; // Redirect to account.html if already logged in
+    }
+});
+
+    </script>
 </body>
 </html>
