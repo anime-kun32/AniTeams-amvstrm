@@ -152,130 +152,141 @@ a:hover {
 
     <!-- Firebase App (the core Firebase SDK) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js";
+       <!-- Firebase App (the core Firebase SDK) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-firestore.js";
+import { getDatabase, ref as dbRef, set } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBgonWKzerFz_YMUHBFIbGkGAr2de0OAQo",
-            authDomain: "aniteams-83c62.firebaseapp.com",
-            projectId: "aniteams-83c62",
-            storageBucket: "aniteams-83c62.appspot.com",
-            messagingSenderId: "571785825154",
-            appId: "1:571785825154:web:d8f684c660c28eab121d9b",
-            measurementId: "G-72YGQR0CPH"
-        };
+// Firebase configuration
+const firebaseConfig = {
+apiKey: "AIzaSyBgonWKzerFz_YMUHBFIbGkGAr2de0OAQo",
+authDomain: "aniteams-83c62.firebaseapp.com",
+projectId: "aniteams-83c62",
+storageBucket: "aniteams-83c62.appspot.com",
+messagingSenderId: "571785825154",
+appId: "1:571785825154:web:d8f684c660c28eab121d9b",
+measurementId: "G-72YGQR0CPH"
+};
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-        const db = getFirestore(app);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const storage = getStorage(app);
+const db = getFirestore(app);
+const database = getDatabase(app);
 
-        window.showSignupForm = function() {
-            document.getElementById('signup-form').classList.remove('hidden');
-            document.getElementById('login-form').classList.add('hidden');
-        }
+window.showSignupForm = function() {
+document.getElementById('signup-form').classList.remove('hidden');
+document.getElementById('login-form').classList.add('hidden');
+}
 
-        window.showLoginForm = function() {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('signup-form').classList.add('hidden');
-        }
+window.showLoginForm = function() {
+document.getElementById('login-form').classList.remove('hidden');
+document.getElementById('signup-form').classList.add('hidden');
+}
 
-        function showStatusBanner(message, isSuccess) {
-            const banner = document.getElementById('status-banner');
-            const messageSpan = document.getElementById('status-message');
-            const timeline = document.getElementById('status-timeline');
+function showStatusBanner(message, isSuccess) {
+const banner = document.getElementById('status-banner');
+const messageSpan = document.getElementById('status-message');
+const timeline = document.getElementById('status-timeline');
 
-            messageSpan.innerText = message;
-            banner.className = isSuccess ? 'success' : 'error';
-            timeline.style.width = '100%';
-            banner.classList.remove('hidden');
+messageSpan.innerText = message;
+banner.className = isSuccess ? 'success' : 'error';
+timeline.style.width = '100%';
+banner.classList.remove('hidden');
 
-            setTimeout(() => {
-                banner.classList.add('hidden');
-            }, 5000); // Banner visible for 5 seconds
-        }
+setTimeout(() => {
+banner.classList.add('hidden');
+}, 5000); // Banner visible for 5 seconds
+}
 
-        window.signUp = async function() {
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            const name = document.getElementById('signup-name').value;
-            const file = document.getElementById('profile-picture').files[0];
+window.signUp = async function() {
+const email = document.getElementById('signup-email').value;
+const password = document.getElementById('signup-password').value;
+const name = document.getElementById('signup-name').value;
+const file = document.getElementById('profile-picture').files[0];
 
-            try {
-                // Create a user with email and password
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+try {
+// Create a user with email and password
+const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+const user = userCredential.user;
 
-                if (file) {
-                    const storageRef = ref(storage, 'profile_pictures/' + file.name);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
+// Create paths in Realtime Database
+await set(dbRef(database, 'users/' + user.uid), {
+name: name,
+email: email
+});
+await set(dbRef(database, 'bookmarks/' + user.uid), {});
 
-                    uploadTask.on('state_changed', (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        document.getElementById('upload-progress').style.width = progress + '%';
-                        document.getElementById('upload-progress').innerText = 'Uploading ' + Math.round(progress) + '%';
-                    }, (error) => {
-                        console.error('Upload failed:', error);
-                        showStatusBanner('Upload failed: ' + error.message, false);
-                    }, async () => {
-                        const downloadURL = await getDownloadURL(storageRef);
-                        console.log('Upload successful!');
-                        document.getElementById('upload-progress').style.width = '100%';
-                        document.getElementById('upload-progress').innerText = 'Upload complete';
-                        showStatusBanner('Upload complete', true);
+if (file) {
+const storageRef = ref(storage, 'profile_pictures/' + file.name);
+const uploadTask = uploadBytesResumable(storageRef, file);
 
-                        // Save user data to Firestore
-                        await setDoc(doc(db, 'users', user.uid), {
-                            name: name,
-                            email: email,
-                            profilePictureURL: downloadURL
-                        });
+uploadTask.on('state_changed', (snapshot) => {
+const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+document.getElementById('upload-progress').style.width = progress + '%';
+document.getElementById('upload-progress').innerText = 'Uploading ' + Math.round(progress) + '%';
+}, (error) => {
+console.error('Upload failed:', error);
+showStatusBanner('Upload failed: ' + error.message, false);
+}, async () => {
+const downloadURL = await getDownloadURL(storageRef);
+console.log('Upload successful!');
+document.getElementById('upload-progress').style.width = '100%';
+document.getElementById('upload-progress').innerText = 'Upload complete';
+showStatusBanner('Upload complete', true);
 
-                        // Redirect to account.html
-                        window.location.href = 'account.html';
-                    });
-                } else {
-                    // Save user data to Firestore without profile picture
-                    await setDoc(doc(db, 'users', user.uid), {
-                        name: name,
-                        email: email,
-                        profilePictureURL: null
-                    });
+// Save user data to Firestore
+await setDoc(doc(db, 'users', user.uid), {
+name: name,
+email: email,
+profilePictureURL: downloadURL
+});
 
-                    // Redirect to account.html
-                    window.location.href = 'account.html';
-                }
-            } catch (error) {
-                console.error('Error signing up:', error);
-                showStatusBanner('Error signing up: ' + error.message, false);
-            }
-        }
+// Redirect to account.html
+window.location.href = 'account.html';
+});
+} else {
+// Save user data to Firestore without profile picture
+await setDoc(doc(db, 'users', user.uid), {
+name: name,
+email: email,
+profilePictureURL: null
+});
 
-        window.signIn = async function() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+// Redirect to account.html
+window.location.href = 'account.html';
+}
+} catch (error) {
+console.error('Error signing up:', error);
+showStatusBanner('Error signing up: ' + error.message, false);
+}
+}
 
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                showStatusBanner('Login successful!', true);
-                // Redirect to account.html
-                window.location.href = 'account.html';
-            } catch (error) {
-                console.error('Error signing in:', error);
-                showStatusBanner('Error signing in: ' + error.message, false);
-            }
-        }
+window.signIn = async function() {
+const email = document.getElementById('login-email').value;
+const password = document.getElementById('login-password').value;
 
-        // Check if user is already signed in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'index.html'; // Redirect to account.html if already logged in
-            }
-        });
+try {
+await signInWithEmailAndPassword(auth, email, password);
+showStatusBanner('Login successful!', true);
+// Redirect to account.html
+window.location.href = 'account.html';
+} catch (error) {
+console.error('Error signing in:', error);
+showStatusBanner('Error signing in: ' + error.message, false);
+}
+}
+
+// Check if user is already signed in
+onAuthStateChanged(auth, (user) => {
+if (user) {
+window.location.href = 'index.html'; // Redirect to account.html if already logged in
+}
+});
     </script>
 </body>
 </html>
