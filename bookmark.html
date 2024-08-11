@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarks</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8">Your Bookmarks</h1>
+        <div id="bookmark-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    </div>
+
+    <script>
+        function loadBookmarks() {
+            const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            const bookmarkList = document.getElementById('bookmark-list');
+
+            if (bookmarks.length === 0) {
+                bookmarkList.innerHTML = '<p>No bookmarks yet.</p>';
+                return;
+            }
+
+            bookmarkList.innerHTML = bookmarks.map(bookmark => `
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                    <img src="${bookmark.coverImage}" alt="${bookmark.title}" class="rounded mb-4">
+                    <h2 class="text-xl font-bold mb-2">${bookmark.title}</h2>
+                    <a href="index.html?id=${bookmark.id}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Details</a>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', loadBookmarks);
+    </script>
+</body>
+</html>
