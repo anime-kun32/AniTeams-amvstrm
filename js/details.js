@@ -58,6 +58,9 @@ function createAnimeDetails(data) {
                 <a href="${dubUrl}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Dub</a>
             </div>
             <div class="mt-4">
+                <button onclick="bookmarkAnime('${data.id}', '${title}', '${coverImage}')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Bookmark</button>
+            </div>
+            <div class="mt-4">
                 <div class="relative cursor-pointer" onclick="openVideo('${trailerUrl}')">
                     <img src="${trailerThumbnail}" alt="Trailer Thumbnail" class="rounded shadow-lg">
                     <div class="absolute inset-0 flex items-center justify-center">
@@ -100,6 +103,13 @@ function logError(message) {
     } else {
         console.error(message);
     }
+}
+
+function bookmarkAnime(id, title, coverImage) {
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+    bookmarks.push({ id, title, coverImage });
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    alert('Anime bookmarked!');
 }
 
 async function init() {
