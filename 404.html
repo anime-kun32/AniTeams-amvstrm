@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom 404 Redirect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-800 flex items-center justify-center min-h-screen">
+
+    <div class="text-center">
+        <!-- Anime Girl Image -->
+        <img src="./girl.gif.gif" alt="Confused Anime Girl" class="mx-auto mb-6">
+
+        <!-- 404 Message -->
+        <h1 class="text-4xl text-white font-bold mb-4">404 - Page Not Found</h1>
+        <p class="text-gray-400 mb-8">Oops! The page you're looking for doesn't exist. The anime girl is just as confused as you are.</p>
+
+        <!-- Buttons -->
+        <div class="flex justify-center space-x-4">
+            <button onclick="location.reload()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Retry</button>
+            <a href="index.html" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition">Go Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Function to check if the current page file exists and redirect if it does not
+        function checkCurrentPageExists() {
+            // Get the current page path
+            const currentPath = window.location.pathname;
+
+            fetch(currentPath, { method: 'HEAD' })
+                .then(response => {
+                    if (!response.ok) {
+                        // If the response is not OK (e.g., 404), redirect to the custom 404 page
+                        window.location.href = '/custom-404.html'; // Replace with your custom 404 page path
+                    }
+                })
+                .catch(() => {
+                    // On any error, redirect to the custom 404 page
+                    window.location.href = '/custom-404.html'; // Replace with your custom 404 page path
+                });
+        }
+
+        // Call the function to check if the file exists
+        checkCurrentPageExists();
+    </script>
+
+</body>
+</html>
