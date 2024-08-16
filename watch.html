@@ -38,12 +38,15 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="artplayer-app"></div>
-    
-<img src="load.gif" class="loading-gif" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
+ <div class="artplayer-app"></div>
+<div class="loading-svg" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    <circle cx="50" cy="50" r="45" stroke-width="10" stroke="#f00" fill="none" stroke-dasharray="283" stroke-dashoffset="75">
+      <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
+    </circle>
+  </svg>
+</div>
 
-  </div>
   <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast/dist/artplayer-plugin-chromecast.js"></script>
@@ -116,9 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
       art.destroy();
     }
 
-    // Show loading GIF
-    const loadingGif = document.querySelector('.loading-gif');
-    loadingGif.style.display = 'block';
+    // Show loading SVG
+    const loadingSvg = document.querySelector('.loading-svg');
+    loadingSvg.style.display = 'block';
 
     art = new Artplayer({
       container: '.artplayer-app',
@@ -191,15 +194,11 @@ document.addEventListener('DOMContentLoaded', () => {
             hls.attachMedia(video);
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
               video.play();
-              // Hide loading GIF
-              loadingGif.style.display = 'none';
             });
           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = url;
             video.addEventListener('loadedmetadata', () => {
               video.play();
-              // Hide loading GIF
-              loadingGif.style.display = 'none';
             });
           } else {
             art.notice.show('Does not support playback of m3u8');
@@ -211,6 +210,21 @@ document.addEventListener('DOMContentLoaded', () => {
         'playsinline': true,
       },
       lock: true, // Enable control lock feature
+    });
+
+    // Hide loading SVG when the video starts playing
+    art.on('video:playing', () => {
+      loadingSvg.style.display = 'none';
+    });
+
+    // Show loading SVG when the video is loading or buffering
+    art.on('video:waiting', () => {
+      loadingSvg.style.display = 'block';
+    });
+
+    // Hide loading SVG when the video resumes playing after buffering
+    art.on('video:canplay', () => {
+      loadingSvg.style.display = 'none';
     });
 
     // Event listener to save the current time periodically
@@ -280,5 +294,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fetch the initial video data and initialize the player
   fetchVideoData().then(initializePlayer);
 });
+
 
   </script>
