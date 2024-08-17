@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artplayer with Thumbnails</title>
   <style>
     html, body {
       height: 100%;
@@ -38,227 +44,211 @@
   </style>
 </head>
 <body>
- <div class="artplayer-app"></div>
-<div class="loading-svg" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-    <circle cx="50" cy="50" r="45" stroke-width="10" stroke="#f00" fill="none" stroke-dasharray="283" stroke-dashoffset="75">
-      <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
-    </circle>
-  </svg>
-</div>
+  <div class="artplayer-app"></div>
+  <div class="loading-svg" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+      <circle cx="50" cy="50" r="45" stroke-width="10" stroke="#f00" fill="none" stroke-dasharray="283" stroke-dashoffset="75">
+        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast/dist/artplayer-plugin-chromecast.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-thumbnail@1.0.3/dist/artplayer-plugin-vtt-thumbnail.min.js"></script>
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const baseApiUrl = 'https://api-p1xr.vercel.app/api/v2/stream'; // Base URL for the API, replace this with your own deployed API from amvstrm (https://github.com/amvstrm/api)
-    let art = null; // Variable to store the Artplayer instance
+    document.addEventListener('DOMContentLoaded', () => {
+      const baseApiUrl = 'https://api-p1xr.vercel.app/api/v2/stream';
+      let art = null;
+      let thumbnail = null;
 
-    // Function to extract query parameters from the URL
-    const getQueryParam = (param) => {
+      const getQueryParam = (param) => {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(param);
-    };
+      };
 
-    // Get the ID from the URL
-    const id = getQueryParam('id');
-    if (!id) {
+      const id = getQueryParam('id');
+      if (!id) {
         console.error('No ID provided in URL');
         return;
-    }
+      }
 
-    // Fetch video data from the API
-    const fetchVideoData = () => {
+      const fetchVideoData = () => {
         const apiUrl = `${baseApiUrl}/${id}`;
-        console.log(`Fetching video data from: ${apiUrl}`); // Debug log
         return fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .catch(error => {
-                console.error('Error fetching API data:', error);
-            });
-    };
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .catch(error => {
+            console.error('Error fetching API data:', error);
+          });
+      };
 
-    // Function to save the current time to local storage
-    const saveCurrentTime = (videoId, time) => {
+      const saveCurrentTime = (videoId, time) => {
         localStorage.setItem(`lastSeen-${videoId}`, time);
-    };
+      };
 
-    // Function to get the last seen time from local storage
-    const getLastSeenTime = (videoId) => {
+      const getLastSeenTime = (videoId) => {
         return localStorage.getItem(`lastSeen-${videoId}`);
-    };
+      };
 
-    // Initialize or reinitialize the player with the new data
-    const initializePlayer = (data) => {
+      const initializePlayer = (data) => {
         if (!data || !data.stream || !data.stream.multi || !data.stream.multi.main || !data.stream.multi.backup) {
-            console.error('Invalid data received from API:', data); // Debug log
-            return;
+          console.error('Invalid data received from API:', data);
+          return;
         }
 
         const videoSource = data.stream.multi.main.url;
         const backupSource = data.stream.multi.backup.url;
         const thumbnailTrack = data.stream.tracks && data.stream.tracks.kind === 'thumbnails' ? {
-            label: "Thumbnails",
-            file: data.stream.tracks.file
+          label: "Thumbnails",
+          file: data.stream.tracks.file
         } : null;
 
-        // Set the document title based on the API response
         document.title = data.info.title;
-
-        // Get the last seen time from local storage
         const lastSeenTime = getLastSeenTime(id);
 
-        // Destroy the existing player if it exists
         if (art) {
-            art.destroy();
+          art.destroy();
         }
 
-        // Show loading SVG
         const loadingSvg = document.querySelector('.loading-svg');
         loadingSvg.style.display = 'block';
 
         art = new Artplayer({
-            container: '.artplayer-app',
-            url: videoSource,
-            type: 'm3u8',
-            screenshot: true,
-            setting: true,
-            autoplay: true,
-            fullscreen: true,
-            fullscreenWeb: true,
-            airplay: true,
-            playsInline: true,
-            plugins: [
-                artplayerPluginChromecast({}),
-            ],
-            settings: [
-                {
-                    html: 'Speed',
-                    selector: [
-                        { html: '1.0x', playbackRate: 1.0, default: true },
-                        { html: '1.5x', playbackRate: 1.5 },
-                        { html: '2.0x', playbackRate: 2.0 },
-                    ],
-                    onSelect: function (item) {
-                        art.playbackRate = item.playbackRate;
-                        return item.html;
-                    },
-                },
-                {
-                    html: 'Source',
-                    selector: [
-                        { html: 'Main', url: videoSource, default: true },
-                        { html: 'Backup', url: backupSource },
-                    ],
-                    onSelect: function (item) {
-                        art.switchUrl(item.url);
-                        return item.html;
-                    },
-                },
-                {
-                    html: 'Jump Forward',
-                    selector: [
-                        { html: '10s', time: 10 },
-                        { html: '30s', time: 30 },
-                        { html: '60s', time: 60 },
-                    ],
-                    onSelect: function (item) {
-                        art.currentTime += item.time;
-                        return item.html;
-                    },
-                },
-                {
-                    html: 'Jump Backward',
-                    selector: [
-                        { html: '10s', time: -10 },
-                        { html: '30s', time: -30 },
-                        { html: '60s', time: -60 },
-                    ],
-                    onSelect: function (item) {
-                        art.currentTime += item.time;
-                        return item.html;
-                    },
-                },
-            ],
-            customType: {
-                m3u8: function (video, url) {
-                    if (Hls.isSupported()) {
-                        const hls = new Hls();
-                        hls.loadSource(url);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                            video.play();
-                        });
-                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                        video.src = url;
-                        video.addEventListener('loadedmetadata', () => {
-                            video.play();
-                        });
-                    } else {
-                        art.notice.show('Does not support playback of m3u8');
-                    }
-                }
+          container: '.artplayer-app',
+          url: videoSource,
+          type: 'm3u8',
+          screenshot: true,
+          setting: true,
+          autoplay: true,
+          fullscreen: true,
+          fullscreenWeb: true,
+          airplay: true,
+          playsInline: true,
+          plugins: [
+            artplayerPluginChromecast({}),
+          ],
+          settings: [
+            {
+              html: 'Speed',
+              selector: [
+                { html: '1.0x', playbackRate: 1.0, default: true },
+                { html: '1.5x', playbackRate: 1.5 },
+                { html: '2.0x', playbackRate: 2.0 },
+              ],
+              onSelect: function (item) {
+                art.playbackRate = item.playbackRate;
+                return item.html;
+              },
             },
-            moreVideoAttr: {
-                'webkit-playsinline': true,
-                'playsinline': true,
+            {
+              html: 'Source',
+              selector: [
+                { html: 'Main', url: videoSource, default: true },
+                { html: 'Backup', url: backupSource },
+              ],
+              onSelect: function (item) {
+                art.switchUrl(item.url);
+                return item.html;
+              },
             },
-            lock: true, // Enable control lock feature
-            customLoading: true, // Disable default loading animation
+            {
+              html: 'Jump Forward',
+              selector: [
+                { html: '10s', time: 10 },
+                { html: '30s', time: 30 },
+                { html: '60s', time: 60 },
+              ],
+              onSelect: function (item) {
+                art.currentTime += item.time;
+                return item.html;
+              },
+            },
+            {
+              html: 'Jump Backward',
+              selector: [
+                { html: '10s', time: -10 },
+                { html: '30s', time: -30 },
+                { html: '60s', time: -60 },
+              ],
+              onSelect: function (item) {
+                art.currentTime += item.time;
+                return item.html;
+              },
+            },
+          ],
+          customType: {
+            m3u8: function (video, url) {
+              if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                  video.play();
+                });
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.addEventListener('loadedmetadata', () => {
+                  video.play();
+                });
+              } else {
+                art.notice.show('Does not support playback of m3u8');
+              }
+            }
+          },
+          moreVideoAttr: {
+            'webkit-playsinline': true,
+            'playsinline': true,
+          },
+          lock: true,
+          customLoading: true,
         });
 
-        // Hide loading SVG when the video starts playing
         art.on('video:playing', () => {
-            loadingSvg.style.display = 'none';
+          loadingSvg.style.display = 'none';
         });
 
-        // Show loading SVG when the video is loading or buffering
         art.on('video:waiting', () => {
-            loadingSvg.style.display = 'block';
+          loadingSvg.style.display = 'block';
         });
 
-        // Hide loading SVG when the video resumes playing after buffering
         art.on('video:canplay', () => {
-            loadingSvg.style.display = 'none';
+          loadingSvg.style.display = 'none';
         });
 
-        // Event listener to save the current time periodically
         art.on('video:timeupdate', () => {
-            saveCurrentTime(id, art.currentTime);
+          saveCurrentTime(id, art.currentTime);
         });
 
-        // Check for last seen time and prompt the user
         if (lastSeenTime) {
-            art.notice.show(
-                `Resume from last seen position?`,
-                [
-                    {
-                        html: 'Yes',
-                        onClick: () => {
-                            art.currentTime = parseFloat(lastSeenTime);
-                            art.notice.hide();
-                        },
-                    },
-                    {
-                        html: 'No',
-                        onClick: () => {
-                            art.notice.hide();
-                        },
-                    },
-                ],
-                5000,
-            );
+          art.notice.show(
+            `Resume from last seen position?`,
+            [
+              {
+                html: 'Yes',
+                onClick: () => {
+                  art.currentTime = parseFloat(lastSeenTime);
+                  art.notice.hide();
+                },
+              },
+              {
+                html: 'No',
+                onClick: () => {
+                  art.notice.hide();
+                },
+              },
+            ],
+            5000,
+          );
         }
 
-        // Create and style the back button
         const backButton = document.createElement('div');
-        backButton.innerHTML = '&lt;'; // HTML entity for "<"
+        backButton.innerHTML = '&lt;';
         backButton.style.position = 'absolute';
         backButton.style.top = '10px';
         backButton.style.left = '10px';
@@ -267,33 +257,87 @@ document.addEventListener('DOMContentLoaded', () => {
         backButton.style.cursor = 'pointer';
         backButton.style.zIndex = '9999';
 
-        // Add click event to the back button
         backButton.addEventListener('click', () => {
-            window.history.back();
+          window.history.back();
         });
 
-        // Append the back button to the player container
         const playerContainer = document.querySelector('.artplayer-app');
         playerContainer.appendChild(backButton);
 
-        // Listen for fullscreen change events to rotate the screen on mobile devices
         art.on('fullscreen', (state) => {
-            if (state) {
-                // Entering fullscreen
-                screen.orientation.lock('landscape').catch(() => {
-                    console.error('Screen orientation lock failed');
-                });
-            } else {
-                // Exiting fullscreen
-                screen.orientation.unlock().catch(() => {
-                    console.error('Screen orientation unlock failed');
-                });
-            }
+          if (state) {
+            screen.orientation.lock('landscape').catch(() => {
+              console.error('Screen orientation lock failed');
+            });
+          } else {
+            screen.orientation.unlock().catch(() => {
+              console.error('Screen orientation unlock failed');
+            });
+          }
         });
-    };
 
-    // Fetch the initial video data and initialize the player
-    fetchVideoData().then(initializePlayer);
-});
+        // Initialize thumbnail tool
+        if (thumbnail) {
+          thumbnail.destroy();
+        }
 
+        thumbnail = new ArtplayerToolThumbnail({
+          fileInput: document.querySelector('.artplayer-app'),
+          number: 60,
+          width: 160,
+          column: 10,
+          begin: 0,
+          end: NaN,
+        });
+
+        thumbnail.on('file', (file) => {
+          console.log('Read video successfully: ' + file.name);
+        });
+
+        thumbnail.on('video', (video) => {
+          console.log('Video size: ' + video.videoWidth + ' x ' + video.videoHeight);
+          console.log('Video duration: ' + video.duration + 's');
+          thumbnail.start();
+        });
+
+        thumbnail.on('canvas', (canvas) => {
+          console.log('Build canvas successfully');
+          console.log('Canvas size: ' + canvas.width + ' x ' + canvas.height);
+          console.log('Preview density: ' + thumbnail.density + ' p/s');
+        });
+
+        thumbnail.on('update', (url, percentage) => {
+          console.log('Processing: ' + Math.floor(percentage.toFixed(2) * 100) + '%');
+          // Show thumbnail preview in a popup or similar UI element
+          // Implement as needed, e.g., updating an overlay image
+        });
+
+        thumbnail.on('download', (name) => {
+          console.log('Start download preview: ' + name);
+        });
+
+        thumbnail.on('done', () => {
+          console.log('Build preview image complete');
+          thumbnail.download();
+
+          new Artplayer({
+            container: '.artplayer-app',
+            url: videoSource,
+            autoSize: true,
+            poster: thumbnail.thumbnailUrl,
+            thumbnails: {
+              url: thumbnail.thumbnailUrl,
+              number: thumbnail.option.number,
+              column: thumbnail.option.column,
+            },
+          });
+
+          console.log('Build player complete');
+        });
+      };
+
+      fetchVideoData().then(initializePlayer);
+    });
   </script>
+</body>
+</html>
