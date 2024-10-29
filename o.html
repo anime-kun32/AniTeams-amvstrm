@@ -33,7 +33,7 @@
     // Load video info from API using the ID from URL parameters
     async function loadVideoData() {
       const id = getParam('id');
-      const apiUrl = `https://your-api-url.com/video?id=${id}`;
+      const apiUrl = `https://api-p1xr.vercel.app/api/v2/stream/${id}`;
 
       try {
         const response = await fetch(apiUrl);
