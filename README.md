@@ -1,3 +1,5 @@
+# Update 
+this project is down because the api service I'm using is down . I'm trying my best to find another yo keep it running. 
 # Projetc details 
 AniTeams , but this time it uses  [Amvstrm Api ](https://github.com/amvstrm/api), and a new layout as well . The layout might slightly similar to amvstrm official website 
 
