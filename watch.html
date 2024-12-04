@@ -51,9 +51,10 @@
   <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast/dist/artplayer-plugin-chromecast.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-thumbnail@1.0.3/dist/artplayer-plugin-vtt-thumbnail.min.js"></script>
   <script>
-   document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const baseApiUrl = 'https://api-p1xr.vercel.app/api/v2/stream';
     let art = null;
+    let thumbnail = null;
 
     const getQueryParam = (param) => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -69,7 +70,8 @@
     const fetchVideoData = () => {
         const apiUrl = `${baseApiUrl}/${id}`;
         return fetch(apiUrl)
-            .then (!response.ok) {
+            .then(response => {
+                if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.json();
@@ -93,15 +95,30 @@
             return;
         }
 
+        // Set video source to the proxy URL
         const videoSource = `https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${encodeURIComponent(data.stream.multi.main.url)}`;
         const backupSource = `https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=${encodeURIComponent(data.stream.multi.backup.url)}`;
-        document.title = data.info.title;
+        const thumbnailTrack = data.stream.tracks && data.stream.tracks.kind === 'thumbnails' ? {
+            label: "Thumbnails",
+            file: data.stream.tracks.file
+        } : null;
 
+        document.title = data.info.title;
         const lastSeenTime = getLastSeenTime(id);
 
         if (art) {
             art.destroy();
         }
+
+        const customLoading = `
+            <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+                    <circle cx="50" cy="50" r="45" stroke-width="10" stroke="#f00" fill="none" stroke-dasharray="283" stroke-dashoffset="75">
+                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+        `;
 
         art = new Artplayer({
             container: '.artplayer-app',
@@ -113,8 +130,23 @@
             fullscreen: true,
             fullscreenWeb: true,
             airplay: true,
-            plays,
+            playsInline: true,
+            plugins: [
+                artplayerPluginChromecast({}),
+            ],
             settings: [
+                {
+                    html: 'Speed',
+                    selector: [
+                        { html: '1.0x', playbackRate: 1.0, default: true },
+                        { html: '1.5x', playbackRate: 1.5 },
+                        { html: '2.0x', playbackRate: 2.0 },
+                    ],
+                    onSelect: function (item) {
+                        art.playbackRate = item.playbackRate;
+                        return item.html;
+                    },
+                },
                 {
                     html: 'Source',
                     selector: [
@@ -123,6 +155,30 @@
                     ],
                     onSelect: function (item) {
                         art.switchUrl(item.url);
+                        return item.html;
+                    },
+                },
+                {
+                    html: 'Jump Forward',
+                    selector: [
+                        { html: '10s', time: 10 },
+                        { html: '30s', time: 30 },
+                        html: '60s', time: 60 },
+                    ],
+                    onSelect: function (item) {
+                        art.currentTime += item.time;
+                        return item.html;
+                    },
+                },
+                {
+                    html: 'Jump Backward',
+                    selector: [
+                        { html: '10s', time: -10 },
+                        { html: '30s', time: -30 },
+                        { html: '60s', time: -60 },
+                    ],
+                    onSelect: function (item) {
+                        art.currentTime += item.time;
                         return item.html;
                     },
                 },
@@ -144,12 +200,14 @@
                     } else {
                         art.notice.show('Does not support playback of m3u8');
                     }
-                },
+                }
             },
             moreVideoAttr: {
                 'webkit-playsinline': true,
                 'playsinline': true,
             },
+            lock: true,
+            customL: customLoading, // Using the custom loading SVG
         });
 
         art.on('video:timeupdate', () => {
@@ -169,17 +227,105 @@
                     },
                     {
                         html: 'No',
-                        onClick.hide();
+                        onClick: () => {
+                            art.notice.hide();
                         },
                     },
                 ],
                 5000,
             );
         }
+
+        const backButton = document.createElement('div');
+        backButton.innerHTML = '&lt;';
+        backButton.style.position = 'absolute';
+        backButton.style.top = '10px';
+        backButton.style.left = '10px';
+        backButton.style.fontSize = '24px';
+        backButton.style.color = 'white';
+        backButton.style.cursor = 'pointer';
+        backButton.style.zIndex = '9999';
+
+        backButton.addEventListener('click', () => {
+            window.history.back();
+        });
+
+        const playerContainer = document.querySelector('.artplayer-app');
+        playerContainer.appendChild(backButton);
+
+        art.on('fullscreen', (state) => {
+            if (state) {
+                screen.orientation.lock('landscape').catch(() => {
+                    console.error('Screen orientation lock failed');
+ });
+            } else {
+                screen.orientation.unlock().catch(() => {
+                    console.error('Screen orientation unlock failed');
+                });
+            }
+        });
+
+        // Initialize thumbnail tool
+        if (thumbnail) {
+            thumbnail.destroy();
+        }
+
+        thumbnail = new ArtplayerToolThumbnail({
+            fileInput: document.querySelector('.artplayer-app'),
+            number: 60,
+            width: 160,
+            column: 10,
+            begin: 0,
+            end: NaN,
+        });
+
+        thumbnail.on('file', (file) => {
+            console.log('Read video successfully: ' + file.name);
+        });
+
+        thumbnail.on('video', (video) => {
+            console.log('Video size: ' + video.videoWidth + ' x ' + video.videoHeight);
+            console.log('Video duration: ' + video.duration + 's');
+            thumbnail.start();
+        });
+
+        thumbnail.on('canvas', (canvas) => {
+            console.log('Build canvas successfully');
+            console.log('Canvas size: ' + canvas.width + ' x ' + canvas.height);
+            console.log('Preview density: ' + thumbnail.density + ' p/s');
+        });
+
+        thumbnail.on('update', (url, percentage) => {
+            console.log('Processing: ' + Math.floor(percentage.toFixed(2) * 100) + '%');
+        });
+
+        thumbnail.on('download', (name) => {
+            console.log('Start download preview: ' + name);
+        });
+
+        thumbnail.on('done', () => {
+            console.log(' preview image complete');
+            thumbnail.download();
+
+            new Artplayer({
+                container: '.artplayer-app',
+                url: videoSource,
+                autoSize: true,
+                poster: thumbnail.thumbnailUrl,
+                thumbnails: {
+                    url: thumbnail.thumbnailUrl,
+                    number: thumbnail.option.number,
+                    column: thumbnail.option.column,
+                },
+            });
+
+            console.log('Build player complete');
+        });
     };
 
     fetchVideoData().then(initializePlayer);
 });
+
 
   </script>
 </body>
