@@ -194,74 +194,186 @@ video {
   </style>
 </head>
 <body>
+  <div id="oplayer-container">
   <div id="oplayer"></div>
+</div>
 
-  <script>
-    // Utility to get URL parameters
-    function getParam(param) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(param);
+<style>
+  /* Import a custom font */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+  }
+
+  #oplayer-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px; /* Adjust player size */
+    margin: 0 auto;
+  }
+
+  #next-episode-btn {
+    display: none;
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #ccc;
+    color: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    z-index: 10;
+    transition: all 0.3s ease;
+  }
+
+  #next-episode-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #fff;
+    z-index: 1;
+    transition: width 1s ease-in-out;
+  }
+
+  #next-episode-btn.loaded::before {
+    width: 100%;
+  }
+
+  #next-episode-btn span {
+    position: relative;
+    z-index: 2;
+    color: #333;
+    transition: color 1s ease-in-out;
+  }
+
+  #next-episode-btn.loaded span {
+    color: #333;
+  }
+</style>
+
+<script>
+  // Utility to get URL parameters
+  function getParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  // Redirect to index.html on error
+  function redirectToIndex() {
+    window.location.href = 'index.html';
+  }
+
+  // Function to go to the next episode
+  function goToNextEpisode(currentId) {
+    const parts = currentId.split('-');
+    const episodeNumber = parseInt(parts.pop());
+    if (!isNaN(episodeNumber)) {
+      parts.push(episodeNumber + 1);
+      const nextEpisodeId = parts.join('-');
+      const nextUrl = `?id=${nextEpisodeId}`;
+      window.location.href = nextUrl;
+    } else {
+      console.error("Failed to parse episode ID");
     }
+  }
 
-    // Load video info from API using the ID from URL parameters
-    async function loadVideoData() {
-      const id = getParam('id');
-      const apiUrl = `https://api-p1xr.vercel.app/api/v2/stream/${id}`;
+  // Load video info from API using the ID from URL parameters
+  async function loadVideoData() {
+    const id = getParam('id');
+    const apiUrl = `https://api-p1xr.vercel.app/api/v2/stream/${id}`;
 
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+    try {
+      const response = await fetch(apiUrl);
 
-        if (data.code === 200 && data.info && data.stream) {
-          initializePlayer(data);
-        } else {
-          console.error("Failed to fetch video data.");
-        }
-      } catch (error) {
-        console.error("API error:", error);
+      // Redirect if API returns error
+      if (response.status === 500) {
+        redirectToIndex();
+        return;
       }
+
+      const data = await response.json();
+
+      if (data.code === 200 && data.info && data.stream) {
+        initializePlayer(data);
+      } else {
+        console.error("Failed to fetch video data.");
+      }
+    } catch (error) {
+      console.error("API error:", error);
+      redirectToIndex();
     }
+  }
 
-    // Initialize OPlayer with video data and resume position if available
-    function initializePlayer(data) {
-      const { title } = data.info;
-      const { url, isM3U8 } = data.stream.multi.main;
-      const thumbnailUrl = data.stream.tracks.file;
+  // Initialize OPlayer with video data and add button functionality
+  function initializePlayer(data) {
+    const { title } = data.info;
+    const { url, isM3U8 } = data.stream.multi.main;
+    const thumbnailUrl = data.stream.tracks.file;
 
-      const player = OPlayer.make('#oplayer', {
-        source: {
-          title: title,
-          src: url,
-          type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4',
-          poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png',
-          thumbnails: {
-            src: thumbnailUrl
-          }
-        },
-      })
+    const player = OPlayer.make('#oplayer', {
+      source: {
+        title: title,
+        src: url,
+        type: isM3U8 ? 'application/x-mpegURL' : 'video/mp4',
+        poster: 'https://cdn.jsdelivr.net/gh/shiyiya/QI-ABSL@master/o/poster.png',
+        thumbnails: {
+          src: thumbnailUrl
+        }
+      },
+    })
       .use([OUI()])
       .create();
 
-      // Check local storage for saved time and resume if available
-      const savedTime = localStorage.getItem(`progress-${data.info.id}`);
-      if (savedTime) {
-        player.seek(Number(savedTime));
-      }
-
-      // Save progress every second
-      player.on('timeupdate', () => {
-        localStorage.setItem(`progress-${data.info.id}`, player.currentTime());
-      });
-
-      // Remove progress when video ends
-      player.on('ended', () => {
-        localStorage.removeItem(`progress-${data.info.id}`);
-      });
+    // Check local storage for saved time and resume if available
+    const savedTime = localStorage.getItem(`progress-${data.info.id}`);
+    if (savedTime) {
+      player.seek(Number(savedTime));
     }
 
-    // Load video data and initialize player
-    loadVideoData();
-  </script>
+    // Save progress every second
+    player.on('timeupdate', () => {
+      localStorage.setItem(`progress-${data.info.id}`, player.currentTime());
+
+      // Show the button 5 minutes before the video ends
+      if (player.duration() - player.currentTime() <= 300) {
+        const nextButton = document.getElementById('next-episode-btn');
+        nextButton.style.display = 'block';
+        nextButton.classList.add('loaded');
+      }
+    });
+
+    // Remove progress when video ends
+    player.on('ended', () => {
+      localStorage.removeItem(`progress-${data.info.id}`);
+    });
+
+    // Handle next episode button click
+    const nextButton = document.createElement('button');
+    nextButton.id = 'next-episode-btn';
+    nextButton.innerHTML = '<span>Next Episode</span>';
+    document.getElementById('oplayer-container').appendChild(nextButton);
+
+    nextButton.addEventListener('click', () => {
+      goToNextEpisode(data.info.id);
+    });
+  }
+
+  // Load video data and initialize player
+  loadVideoData();
+</script>
+
 </body>
   </html>
   
