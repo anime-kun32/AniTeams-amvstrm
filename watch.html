@@ -1,218 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Artplayer with Quality Control</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: #000;
+        }
 
-    .container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #000;
-      overflow: hidden;
-    }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+        }
 
-    .artplayer-app {
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      box-sizing: border-box;
-    }
-  </style>
+        .artplayer-app {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 768px) {
+            .artplayer-app {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .artplayer-app {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast"></script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </head>
 <body>
-  <div class="artplayer-app"></div>
+    <div class="artplayer-app"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast/dist/artplayer-plugin-chromecast.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
-  <script>
-    
-  document.addEventListener('DOMContentLoaded', () => {
-    const baseApiUrl = 'https://api-consumet-org-gamma.vercel.app/meta/anilist/watch';
-    let art = null;
-    let hls = null;
-
-    const getQueryParam = (param) => {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    };
-
-    const id = getQueryParam('id');
-    if (!id) {
-        console.error('No ID provided in URL');
-        return;
-    }
-
-    const fetchVideoData = () => {
-        const apiUrl = `${baseApiUrl}/${id}`;
-        return fetch(apiUrl, {
-            headers: {
-                'Referer': 'https://s3embtaku.pro',
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error fetching API data:', error);
-        });
-    };
-
-    const initializePlayer = (data) => {
-        if (!data || !data.sources || !Array.isArray(data.sources)) {
-            console.error('Invalid data received from API:', data);
-            return;
+    <script>
+        // Utility: Get URL query parameter
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
         }
 
-        const defaultSource = data.sources.find(source => source.quality === 'default');
-        const backupSource = data.sources.find(source => source.quality === 'backup');
-
-        if (!defaultSource || !backupSource) {
-            console.error('Default or backup source not found in API response');
-            return;
+        const id = getQueryParam('id');
+        if (!id) {
+            console.error('No ID provided in URL');
+            alert('No video ID found!');
+            throw new Error('Missing video ID in URL query');
         }
 
-        const videoSource = defaultSource.url;
-        const backupSourceUrl = backupSource.url;
-        let currentSource = videoSource; // Initially set to the default source
+        // API Configuration
+        const apiURL = `https://api-consumet-org-gamma.vercel.app/meta/anilist/watch/${id}`; // Replace with your API endpoint
+        const headers = { 'Referer': 'https://s3embtaku.pro' };
+        let art;
+        let hls;
 
-        document.title = data.info.title;
-
-        if (art) {
-            art.destroy();
+        async function fetchVideoData() {
+            try {
+                const response = await fetch(apiURL, { headers });
+                if (!response.ok) throw new Error('Failed to fetch video data');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching video data:', error);
+                return null;
+            }
         }
 
-        const switchQuality = (level) => {
-            if (hls) {
-                if (level === 'auto') {
-                    hls.currentLevel = -1; // Auto
-                } else {
-                    const qualityIndex = hls.levels.findIndex(l => l.height.toString() === level);
-                    if (qualityIndex !== -1) {
-                        hls.currentLevel = qualityIndex;
-                    }
-                }
-            }
-        };
-
-        const switchServer = (url) => {
-            if (art) {
-                art.switchUrl(url);
-                if (hls) {
-                    hls.loadSource(url);
-                    hls.attachMedia(art.video);
-                }
-            }
-        };
-
-        art = new Artplayer({
-            container: '.artplayer-app',
-            url: currentSource,
-            type: 'm3u8',
-            screenshot: true,
-            setting: true,
-            autoplay: true,
-            fullscreen: true,
-            fullscreenWeb: true,
-            airplay: true,
-            playsInline: true,
-            plugins: [
-                artplayerPluginChromecast({}),
-            ],
-            settings: [
-                {
-                    html: 'Server',
-                    selector: [
-                        { html: 'Default', url: videoSource, default: true },
-                        { html: 'Backup', url: backupSourceUrl },
-                    ],
-                    onSelect: function (item) {
-                        currentSource = item.url;
-                        switchServer(item.url);
-                        return item.html;
-                    },
-                },
-                {
-                    html: 'Quality',
-                    selector: [
-                        { html: 'Auto', value: 'auto', default: true },
-                        { html: '360p', value: '360' },
-                        { html: '480p', value: '480' },
-                        { html: '720p', value: '720' },
-                        { html: '1080p', value: '1080' },
-                    ],
-                    onSelect: function (item) {
-                        switchQuality(item.value);
-                        return item.html;
-                    },
-                },
-            ],
-            customType: {
-                m3u8: function (video, url) {
-                    if (Hls.isSupported()) {
-                        hls = new Hls();
-                        hls.loadSource(url);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                            video.play();
-                        });
-                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                        video.src = url;
-                        video.addEventListener('loadedmetadata', () => {
-                            video.play();
-                        });
-                    } else {
-                        art.notice.show('Does not support playback of m3u8');
-                    }
-                }
-            },
-        });
-
-        art.on('video:timeupdate', () => {
-            localStorage.setItem(`lastSeen-${id}`, art.currentTime);
-        });
-
-        const lastSeenTime = localStorage.getItem(`lastSeen-${id}`);
-        if (lastSeenTime) {
-            art.notice.show(
-                `Resume from last seen position?`,
-                [
-                    {
-                        html: 'Yes',
-                        onClick: () => {
-                            art.currentTime = parseFloat(lastSeenTime);
-                            art.notice.hide();
-                        },
-                    },
-                    {
-                        html: 'No',
-                        onClick: () => {
-                            art.notice.hide();
-                        },
-                    },
-                ],
-                5000,
+        function initializePlayer(videoData) {
+            const defaultSource = videoData.sources.find(source => source.quality === 'default');
+            const backupSource = videoData.sources.find(source => source.quality === 'backup');
+            const qualitySources = videoData.sources.filter(source =>
+                ['360p', '480p', '720p', '1080p'].includes(source.quality)
             );
-        }
-    };
 
-    fetchVideoData().then(initializePlayer);
-  });
-  </script>
+            if (!defaultSource || !backupSource) {
+                console.error('Default or backup source not found.');
+                return;
+            }
+
+            // Initialize ArtPlayer
+            art = new Artplayer({
+                container: '.artplayer-app',
+                url: defaultSource.url,
+                type: 'm3u8',
+                autoplay: true,
+                theme: '#00aaff',
+                setting: true,
+                volume: 0.5,
+                playbackRate: true,
+                fullscreen: true,
+                fullscreenWeb: true,
+                miniProgressBar: true,
+                screenshot: true,
+                plugins: [
+                    artplayerPluginChromecast({})
+                ],
+                settings: [
+                    // Quality Selector
+                    {
+                        html: 'Quality',
+                        selector: qualitySources.map(source => ({
+                            html: source.quality,
+                            url: source.url
+                        })),
+                        onSelect: function (item) {
+                            art.switchUrl(item.url);
+                            return item.html;
+                        }
+                    },
+                    // Server Selector
+                    {
+                        html: 'Server',
+                        selector: [
+                            { html: 'Default', url: defaultSource.url },
+                            { html: 'Backup', url: backupSource.url }
+                        ],
+                        onSelect: function (item) {
+                            art.switchUrl(item.url);
+                            return item.html;
+                        }
+                    },
+                    // Speed Selector
+                    {
+                        html: 'Speed',
+                        selector: [
+                            { html: '1.0x', playbackRate: 1.0, default: true },
+                            { html: '1.5x', playbackRate: 1.5 },
+                            { html: '2.0x', playbackRate: 2.0 }
+                        ],
+                        onSelect: function (item) {
+                            art.playbackRate = item.playbackRate;
+                            return item.html;
+                        }
+                    }
+                ],
+                customType: {
+                    m3u8: function (video, url) {
+                        if (Hls.isSupported()) {
+                            if (hls) hls.destroy(); // Destroy previous instance
+                            hls = new Hls();
+                            hls.loadSource(url);
+                            hls.attachMedia(video);
+                        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                            video.src = url;
+                        } else {
+                            art.notice.show('Your browser does not support HLS playback.');
+                        }
+                    }
+                }
+            });
+
+            // Resume Last Seen Position
+            const lastSeenKey = `last-seen-${id}`;
+            const lastSeen = localStorage.getItem(lastSeenKey);
+            if (lastSeen) {
+                art.currentTime = parseFloat(lastSeen);
+                art.notice.show(`Resumed at ${lastSeen} seconds.`);
+            }
+
+            art.on('video:timeupdate', () => {
+                localStorage.setItem(lastSeenKey, art.currentTime);
+            });
+        }
+
+        // Fetch video data and initialize player
+        fetchVideoData().then(videoData => {
+            if (videoData) initializePlayer(videoData);
+            else alert('Failed to load video data.');
+        });
+    </script>
 </body>
 </html>
