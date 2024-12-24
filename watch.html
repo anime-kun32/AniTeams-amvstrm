@@ -46,7 +46,7 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/artplayer/dist/artplayer.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/artplayer-plugin-chromecast"></script>
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 </head>
 <body>
@@ -64,6 +64,12 @@
             console.error('No ID provided in URL');
             alert('No video ID found!');
             throw new Error('Missing video ID in URL query');
+        }
+
+        // Proxy URL function
+        function applyProxy(url) {
+            const proxyURL = 'https://gogoanime-and-hianime-proxy.vercel.app/hls-proxy?url=';
+            return proxyURL + encodeURIComponent(url);
         }
 
         // API Configuration
@@ -96,10 +102,18 @@
                 return;
             }
 
+            // Apply the proxy to all source URLs
+            const defaultURL = applyProxy(defaultSource.url);
+            const backupURL = applyProxy(backupSource.url);
+            const qualityURLs = qualitySources.map(source => ({
+                ...source,
+                url: applyProxy(source.url)
+            }));
+
             // Initialize ArtPlayer
             art = new Artplayer({
                 container: '.artplayer-app',
-                url: defaultSource.url,
+                url: defaultURL,
                 type: 'm3u8',
                 autoplay: true,
                 theme: '#00aaff',
@@ -117,7 +131,7 @@
                     // Quality Selector
                     {
                         html: 'Quality',
-                        selector: qualitySources.map(source => ({
+                        selector: qualityURLs.map(source => ({
                             html: source.quality,
                             url: source.url
                         })),
@@ -130,8 +144,8 @@
                     {
                         html: 'Server',
                         selector: [
-                            { html: 'Default', url: defaultSource.url },
-                            { html: 'Backup', url: backupSource.url }
+                            { html: 'Default', url: defaultURL },
+                            { html: 'Backup', url: backupURL }
                         ],
                         onSelect: function (item) {
                             art.switchUrl(item.url);
